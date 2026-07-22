@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIS Gateway | Spatial Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS & JS for Interactive Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+
+    <!-- Version 11.0 forces the browser to drop the cache! -->
+    <link rel="stylesheet" href="style.css?v=11.0">
+</head>
+<body>
+
+    <!-- Ambient Background Effects -->
+    <div class="ambient-glow"></div>
+    <div class="spatial-grid"></div>
+    <canvas id="spatial-network"></canvas>
+
+    <!-- Floating Glass Navigation -->
+    <header class="glass-nav">
+        <div class="nav-container">
+            <div class="logo">
+                <img src="logoonly.png" alt="GIS Gateway Logo" class="brand-logo">
+            </div>
+            <nav class="main-nav">
+                <a href="#" data-target="home" class="nav-link active">Home</a>
+                <a href="#" data-target="datasets" class="nav-link">Datasets</a>
+                <a href="#" data-target="contact" class="nav-link">Contact</a>
+            </nav>
+            <div class="nav-actions" style="display: flex; align-items: center; gap: 15px;">
+                
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
+                    <!-- Sun Icon (Default: Dark Mode is active) -->
+                    <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <!-- Moon Icon (Hidden initially, shows in Light Mode) -->
+                    <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+
+                <a href="#" data-target="donate" class="donate-btn route-btn">Donate <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></a>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard">
+        
+        <!-- ================= HOME PAGE ================= -->
+        <section id="home" class="page-section active">
+            <div class="hero-container">
+                <span class="hero-badge">GIS DATA PORTAL</span>
+                <h1 class="hero-title">Built For <br><span class="text-gradient">Spatial Discovery</span></h1>
+                <p class="hero-subtitle">Map, analyze, and inspire with high-resolution meteorological extraction and automated NetCDF processing pipelines.</p>
+                <button class="glow-btn route-btn" data-target="datasets">
+                    Get Started Today
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </button>
+            </div>
+            <div class="feature-grid">
+                <div class="glass-card">
+                    <div class="card-icon">🌍</div>
+                    <h3>High-Resolution Data</h3>
+                    <p>Access daily gridded datasets optimized for research and advanced geoinformatics.</p>
+                </div>
+                <div class="glass-card">
+                    <div class="card-icon">⚡</div>
+                    <h3>NetCDF Pipeline</h3>
+                    <p>Automated extraction, dimension formatting, and seamless zlib compression.</p>
+                </div>
+                <div class="glass-card">
+                    <div class="card-icon">🔓</div>
+                    <h3>Open Source</h3>
+                    <p>Built for the research community, completely free, accessible, and transparent.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= DATASETS PAGE ================= -->
+        <section id="datasets" class="page-section">
+            <div class="widget-grid-layout">
+                
+                <!-- 1. IMD WIDGET -->
+                <div class="glass-card widget-card clickable-drawer">
+                    <div class="widget-header">
+                        <h2>IMD Gridded Data Downloader</h2>
+                    </div>
+                    <div class="widget-expandable">
+                        <div class="widget-content">
+                            <div class="tags" style="margin-bottom: 15px;">
+                                <span class="tag">0.25° x 0.25°</span>
+                                <span class="tag">Daily</span>
+                                <span class="tag">NetCDF</span>
+                            </div>
+                            <p class="description">
+                                High Spatial Resolution Long Period Daily Gridded Rainfall and Temperature Data Set Over India. 
+                                Rainfall (1901-2025). Temperature (1951-2025).
+                            </p>
+                            <div class="checkbox-group">
+                                <span class="group-label">Variables:</span>
+                                <label class="custom-checkbox"><input type="checkbox" id="var-rain" value="rain" checked><span class="checkmark"></span> Rainfall</label>
+                                <label class="custom-checkbox"><input type="checkbox" id="var-tmin" value="tmin" checked><span class="checkmark"></span> Min Temp</label>
+                                <label class="custom-checkbox"><input type="checkbox" id="var-tmax" value="tmax" checked><span class="checkmark"></span> Max Temp</label>
+                            </div>
+                            <div class="controls-container">
+                                <div class="input-group">
+                                    <label for="startYear">Start Year</label>
+                                    <select id="startYear"></select>
+                                </div>
+                                <div class="input-group">
+                                    <label for="endYear">End Year</label>
+                                    <select id="endYear"></select>
+                                </div>
+                                <button id="downloadBtn" class="glow-btn"><span>Extract Data</span></button>
+                            </div>
+                            <div id="progressSection" class="progress-section hidden">
+                                <div class="progress-header"><span id="statusText">Initializing...</span><span id="percentageText">0%</span></div>
+                                <div class="progress-bar-bg"><div id="progressBar" class="progress-bar-fill"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. COPERNICUS DEM WIDGET -->
+                <div class="glass-card widget-card clickable-drawer">
+                    <div class="widget-header">
+                        <h2>Copernicus Global DEM Extractor</h2>
+                    </div>
+                    <div class="widget-expandable">
+                        <div class="widget-content">
+                            <div class="tags" style="margin-bottom: 15px;">
+                                <span class="tag">30m Resolution</span>
+                                <span class="tag">GeoTIFF</span>
+                                <span class="tag">Zero-Key API</span>
+                            </div>
+                            <p class="description">
+                                High-precision 30-meter Digital Elevation Model (DEM) data retrieved dynamically via Microsoft Planetary Computer. No API keys required.
+                            </p>
+
+                            <span class="group-label" style="display: block; margin-bottom: 10px;">1. Draw Region on Map OR Enter Coordinates:</span>
+                            
+                            <!-- THE INTERACTIVE MAP -->
+                            <div id="demMap" style="height: 300px; width: 100%; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--border-glass); z-index: 1;"></div>
+                            
+                            <div class="coordinate-input-grid">
+                                <div class="input-group">
+                                    <label for="minLon">Min Longitude (W)</label>
+                                    <input type="number" id="minLon" placeholder="e.g. 77.0" class="dark-input" step="any">
+                                </div>
+                                <div class="input-group">
+                                    <label for="minLat">Min Latitude (S)</label>
+                                    <input type="number" id="minLat" placeholder="e.g. 10.2" class="dark-input" step="any">
+                                </div>
+                                <div class="input-group">
+                                    <label for="maxLon">Max Longitude (E)</label>
+                                    <input type="number" id="maxLon" placeholder="e.g. 78.0" class="dark-input" step="any">
+                                </div>
+                                <div class="input-group">
+                                    <label for="maxLat">Max Latitude (N)</label>
+                                    <input type="number" id="maxLat" placeholder="e.g. 11.0" class="dark-input" step="any">
+                                </div>
+                            </div>
+
+                            <div class="controls-container" style="justify-content: flex-end; margin-top: 10px;">
+                                <button id="demDownloadBtn" class="glow-btn"><span>Extract DEM Tiles</span></button>
+                            </div>
+
+                            <div id="demProgressSection" class="progress-section hidden">
+                                <div class="progress-header"><span id="demStatusText">Searching Catalog...</span><span id="demPercentageText">0%</span></div>
+                                <div class="progress-bar-bg"><div id="demProgressBar" class="progress-bar-fill"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= CONTACT PAGE ================= -->
+        <section id="contact" class="page-section">
+            <div class="glass-card widget-card" style="text-align: center;">
+                <h2>Contact Us</h2>
+                <p class="description" style="border: none; background: transparent; padding: 0;">Have a question about the datasets? Drop us a line.</p>
+                <form class="contact-form" onsubmit="event.preventDefault(); alert('Message sent successfully!');">
+                    <input type="text" required placeholder="Your Name" class="dark-input">
+                    <input type="email" required placeholder="you@institution.edu" class="dark-input">
+                    <textarea required rows="4" placeholder="How can we help?" class="dark-input" style="resize: vertical;"></textarea>
+                    <button type="submit" class="glow-btn" style="width: 100%;">Send Message</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- ================= DONATE PAGE ================= -->
+        <section id="donate" class="page-section">
+            <div class="hero-container">
+                <h1 style="font-size: 2.5rem;">Support the Project</h1>
+                <p class="hero-subtitle">Keep the spatial data pipeline running and open-source.</p>
+                <div class="glass-card widget-card" style="text-align: center;">
+                    <h3>One-Time Donation</h3>
+                    <p style="margin-bottom: 20px; color: var(--text-muted);">Support ongoing server costs and Python backend updates.</p>
+                    <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
+                        <button class="dark-input" style="width: auto; cursor: pointer; text-align: center;">₹ 10</button>
+                        <button class="dark-input" style="width: auto; cursor: pointer; text-align: center;">₹ 50</button>
+                        <button class="dark-input" style="width: auto; cursor: pointer; text-align: center;">₹ 100</button>
+                    </div>
+                    <button class="glow-btn" style="width: 100%; margin-bottom: 10px;">Donate via PayPal</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Version 11.0 forces the browser to drop the cache! -->
+    <script src="script.js?v=11.0"></script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datasets | GIS Gateway</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=7.0">
+</head>
+<body>
+
+    <!-- Ambient Background Effects -->
+    <div class="ambient-glow"></div>
+    <div class="spatial-grid"></div>
+
+    <!-- Floating Glass Navigation -->
+    <header class="glass-nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <img src="logo.jpeg" alt="GIS Gateway Logo" class="brand-logo">
+            </a>
+            <nav class="main-nav">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="datasets.html" class="nav-link active">Datasets</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+            </nav>
+            <div class="nav-actions">
+                <a href="donate.html" class="donate-btn">Donate <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></a>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard page-fade-in" style="max-width: 1400px;">
+        <div class="hero-container" style="padding-bottom: 20px;">
+            <h2 class="uppercase-subheading">[ Zero-Code Extraction Portal ]</h2>
+        </div>
+
+        <!-- The Grid Wrapper holding both side-by-side widgets -->
+        <div class="widget-grid-layout">
+            
+            <!-- ================= WIDGET 1: IMD DOWNLOADER ================= -->
+            <div class="glass-card widget-card clickable-drawer">
+                <div class="widget-header">
+                    <h2>IMD Gridded Data</h2>
+                </div>
+                
+                <!-- Everything inside here is hidden until hover -->
+                <div class="widget-expandable">
+                    <div class="widget-content">
+                        <div class="tags" style="margin-bottom: 15px;">
+                            <span class="tag">0.25° x 0.25°</span>
+                            <span class="tag">Daily</span>
+                            <span class="tag">NetCDF</span>
+                        </div>
+                        
+                        <p class="description">
+                            High Spatial Resolution Long Period Daily Gridded Rainfall and Temperature Data Set Over India. 
+                            Rainfall (1901-2025). Temperature (1951-2025).
+                        </p>
+
+                        <div class="checkbox-group">
+                            <span class="group-label">Variables:</span>
+                            <label class="custom-checkbox"><input type="checkbox" id="var-rain" value="rain" checked><span class="checkmark"></span> Rainfall</label>
+                            <label class="custom-checkbox"><input type="checkbox" id="var-tmin" value="tmin" checked><span class="checkmark"></span> Min Temp</label>
+                            <label class="custom-checkbox"><input type="checkbox" id="var-tmax" value="tmax" checked><span class="checkmark"></span> Max Temp</label>
+                        </div>
+
+                        <div class="controls-container">
+                            <div class="input-group">
+                                <label for="startYear">Start Year</label>
+                                <select id="startYear"></select>
+                            </div>
+                            <div class="input-group">
+                                <label for="endYear">End Year</label>
+                                <select id="endYear"></select>
+                            </div>
+                            <button id="downloadBtn" class="glow-btn"><span>Extract Data</span></button>
+                        </div>
+
+                        <div id="progressSection" class="progress-section hidden">
+                            <div class="progress-header"><span id="statusText">Initializing...</span><span id="percentageText">0%</span></div>
+                            <div class="progress-bar-bg"><div id="progressBar" class="progress-bar-fill"></div></div>
+                        </div>
+
+                        <div class="citation-box">
+                            <p class="citation-title">Citation Requirement</p>
+                            <p>Nandi, S., Patel, P., & Swain, S. (2024). <a href="https://doi.org/10.1016/j.envsoft.2023.105869" target="_blank">IMDLIB: An open-source library...</a> <em>Environmental Modelling & Software</em>, 171, 105869.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= WIDGET 2: COPERNICUS DEM ================= -->
+            <div class="glass-card widget-card clickable-drawer">
+                <div class="widget-header">
+                    <h2>Copernicus Global DEM</h2>
+                </div>
+                
+                <!-- Everything inside here is hidden until hover -->
+                <div class="widget-expandable">
+                    <div class="widget-content">
+                        <div class="tags" style="margin-bottom: 15px;">
+                            <span class="tag">30m Resolution</span>
+                            <span class="tag">GeoTIFF</span>
+                            <span class="tag">Zero-Key API</span>
+                        </div>
+                        
+                        <p class="description">
+                            High-precision 30-meter Digital Elevation Model (DEM) data retrieved dynamically via Microsoft Planetary Computer STAC catalog services.
+                        </p>
+
+                        <span class="group-label" style="display: block; margin-bottom: 10px;">Define Bounding Box (Decimal Degrees):</span>
+                        <div class="coordinate-input-grid">
+                            <div class="input-group">
+                                <label for="minLon">Min Longitude (W)</label>
+                                <input type="number" id="minLon" placeholder="e.g. 77.0" class="dark-input" step="any">
+                            </div>
+                            <div class="input-group">
+                                <label for="minLat">Min Latitude (S)</label>
+                                <input type="number" id="minLat" placeholder="e.g. 10.2" class="dark-input" step="any">
+                            </div>
+                            <div class="input-group">
+                                <label for="maxLon">Max Longitude (E)</label>
+                                <input type="number" id="maxLon" placeholder="e.g. 78.0" class="dark-input" step="any">
+                            </div>
+                            <div class="input-group">
+                                <label for="maxLat">Max Latitude (N)</label>
+                                <input type="number" id="maxLat" placeholder="e.g. 11.0" class="dark-input" step="any">
+                            </div>
+                        </div>
+
+                        <div class="controls-container" style="justify-content: flex-end; margin-top: 14px;">
+                            <button id="demDownloadBtn" class="glow-btn"><span>Extract DEM Tiles</span></button>
+                        </div>
+
+                        <div id="demProgressSection" class="progress-section hidden">
+                            <div class="progress-header"><span id="demStatusText">Searching...</span><span id="demPercentageText">0%</span></div>
+                            <div class="progress-bar-bg"><div id="demProgressBar" class="progress-bar-fill"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="script.js?v=7.0"></script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact | GIS Gateway</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=7.0">
+</head>
+<body>
+
+    <div class="ambient-glow"></div>
+    <div class="spatial-grid"></div>
+
+    <header class="glass-nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <img src="logo.jpeg" alt="GIS Gateway Logo" class="brand-logo">
+            </a>
+            <nav class="main-nav">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="datasets.html" class="nav-link">Datasets</a>
+                <a href="contact.html" class="nav-link active">Contact</a>
+            </nav>
+            <div class="nav-actions">
+                <a href="donate.html" class="donate-btn">Donate <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></a>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard page-fade-in">
+        <div class="hero-container" style="padding-bottom: 20px;">
+            <h2 class="uppercase-subheading">[ Sentinel Connect ]</h2>
+            <h1 class="hero-title" style="font-size: 3rem;">Initiate Contact</h1>
+        </div>
+
+        <div class="glass-card widget-card" style="max-width: 600px;">
+            <p class="description" style="border: none; background: transparent; padding: 0; margin-bottom: 30px; text-align: center;">
+                Have a question about the meteorological datasets, pipeline integration, or want to report an issue? Send us a secure transmission.
+            </p>
+            
+            <form class="contact-form" onsubmit="event.preventDefault(); alert('Message transmitted successfully!');">
+                <div class="input-group">
+                    <label>Designation / Name</label>
+                    <input type="text" required placeholder="Your Name" class="dark-input">
+                </div>
+                <div class="input-group">
+                    <label>Comms Link / Email</label>
+                    <input type="email" required placeholder="you@institution.edu" class="dark-input">
+                </div>
+                <div class="input-group">
+                    <label>Message Payload</label>
+                    <textarea required rows="5" placeholder="How can we assist your mission?" class="dark-input" style="resize: vertical;"></textarea>
+                </div>
+                <button type="submit" class="glow-btn" style="width: 100%; margin-top: 10px; justify-content: center;">
+                    Transmit Message
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <script src="script.js?v=7.0"></script>
+</body>
+</html>
