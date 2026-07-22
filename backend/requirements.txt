@@ -1,0 +1,9 @@
+flask
+flask-cors
+gunicorn
+requests
+xarray
+imdlib
+netCDF4
+scipy
+planetary-computer
