@@ -98,10 +98,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const encodedPath = encodeURIComponent(savePath);
             const varsParam = selectedVars.join(","); 
             
-            const url = `/api/download?start_year=${startYear}&end_year=${endYear}&vars=${varsParam}`;
-            const eventSource = new EventSource(url);
+            const netcdfUrl = `/api/download?start_year=${startYear}&end_year=${endYear}&vars=${varsParam}`;
+            const netcdfEventSource = new EventSource(netcdfUrl);
 
-            eventSource.onmessage = (event) => {
+            netcdfEventSource.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 
                 statusText.textContent = data.message;
@@ -110,12 +110,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (data.progress === 0) {
                     alert(`Pipeline Error: ${data.message}`);
-                    eventSource.close();
+                    netcdfEventSource.close();
                     downloadBtn.disabled = false;
                 }
 
                 if (data.progress === 100) {
-                    eventSource.close();
+                    netcdfEventSource.close();
                     setTimeout(() => {
                         alert(`Extraction Complete! NetCDF files generated successfully in ${savePath}`);
                         downloadBtn.disabled = false;
@@ -125,10 +125,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             };
 
-            eventSource.onerror = (err) => {
+            netcdfEventSource.onerror = (err) => {
                 console.error("EventSource failed:", err);
                 statusText.textContent = "Connection lost. Is the backend running?";
-                eventSource.close();
+                netcdfEventSource.close();
                 downloadBtn.disabled = false;
             };
         });
@@ -169,12 +169,11 @@ document.addEventListener("DOMContentLoaded", () => {
             demStatusText.textContent = "Generating Anonymous Token & Searching Catalog...";
 
             const encodedPath = encodeURIComponent(savePath);
-            const url = `/api/dem?min_lon=${minLon}&min_lat=${minLat}&max_lon=${maxLon}&max_lat=${maxLat}&path=${encodedPath}`;
-            const eventSource = new EventSource(url);
+            const demUrl = `/api/dem?min_lon=${minLon}&min_lat=${minLat}&max_lon=${maxLon}&max_lat=${maxLat}&path=${encodedPath}`;
+            const demEventSource = new EventSource(demUrl);
             
-            const eventSource = new EventSource(url);
 
-            eventSource.onmessage = (event) => {
+            demEventSource.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 
                 demStatusText.textContent = data.message;
@@ -183,12 +182,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (data.progress === 0 && data.message.includes("Error")) {
                     alert(`Pipeline Error: ${data.message}`);
-                    eventSource.close();
+                    demEventSource.close();
                     demDownloadBtn.disabled = false;
                 }
 
                 if (data.progress === 100) {
-                    eventSource.close();
+                    demEventSource.close();
                     setTimeout(() => {
                         alert(`Extraction Complete! Copernicus DEM tiles generated successfully in ${savePath}`);
                         demDownloadBtn.disabled = false;
@@ -198,10 +197,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             };
 
-            eventSource.onerror = (err) => {
+            demEventSource.onerror = (err) => {
                 console.error("EventSource failed:", err);
                 demStatusText.textContent = "Connection lost. Is the backend running?";
-                eventSource.close();
+                demEventSource.close();
                 demDownloadBtn.disabled = false;
             };
         });
