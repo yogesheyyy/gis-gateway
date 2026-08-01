@@ -11,6 +11,9 @@ from flask import send_from_directory
 app = Flask(__name__)
 CORS(app)
 
+# Define the path to your frontend folder (one level up, then into 'frontend')
+FRONTEND_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../frontend'))
+
 # =====================================================================
 # IMD HELPER FUNCTION
 # =====================================================================
@@ -35,8 +38,12 @@ def download_imd_data():
     vars_param = request.args.get('vars', type=str)
     out_dir = request.args.get('path', type=str)
 
-    if not start_year or not end_year or not vars_param or not out_dir:
-        return {"error": "Missing parameters"}, 400
+    # Fallback to default directory if path is not sent by frontend
+    if not out_dir:
+        out_dir = os.path.join(os.getcwd(), 'downloads')
+
+    if not start_year or not end_year or not vars_param:
+        return {"error": "Missing required parameters (start_year, end_year, vars)"}, 400
 
     variables = vars_param.split(',')
 
@@ -106,9 +113,6 @@ def download_imd_data():
 # =====================================================================
 # 2. COPERNICUS DEM PIPELINE
 # =====================================================================
-# =====================================================================
-# 2. COPERNICUS DEM PIPELINE (WITH REAL-TIME BYTE TRACKING)
-# =====================================================================
 @app.route('/api/dem')
 def extract_dem():
     min_lon = request.args.get('min_lon', type=float)
@@ -117,8 +121,11 @@ def extract_dem():
     max_lat = request.args.get('max_lat', type=float)
     out_dir = request.args.get('path', type=str)
 
-    if None in [min_lon, min_lat, max_lon, max_lat, out_dir]:
-        return {"error": "Missing coordinate or path parameters"}, 400
+    if not out_dir:
+        out_dir = os.path.join(os.getcwd(), 'dem_downloads')
+
+    if None in [min_lon, min_lat, max_lon, max_lat]:
+        return {"error": "Missing coordinate parameters"}, 400
 
     def generate_progress():
         try:
@@ -150,14 +157,12 @@ def extract_dem():
                 file_name = tif_url.split("/")[-1]
                 file_path = os.path.join(out_dir, file_name)
                 
-                # Base progress before this specific tile starts downloading
                 base_tile_progress = 30 + ((i / total_tiles) * 70)
                 yield f"data: {json.dumps({'progress': int(base_tile_progress), 'message': f'Initializing Download: {file_name}...'})}\n\n"
                 
                 dl_res = requests.get(signed_url, stream=True)
                 dl_res.raise_for_status()
                 
-                # Retrieve the total file size from the server headers
                 total_size = int(dl_res.headers.get('content-length', 0))
                 downloaded = 0
                 chunk_size = 8192
@@ -168,12 +173,10 @@ def extract_dem():
                             f.write(chunk)
                             downloaded += len(chunk)
                             
-                            # Real-time progress math
                             if total_size > 0:
                                 file_percent = downloaded / total_size
                                 overall_progress = base_tile_progress + (file_percent * (70 / total_tiles))
                                 
-                                # Prevent SSE flooding: Only send an update to the frontend roughly every 1 Megabyte
                                 if downloaded % (1024 * 1024) <= chunk_size:
                                     yield f"data: {json.dumps({'progress': int(overall_progress), 'message': f'Downloading Tile {i+1}/{total_tiles} [{int(file_percent * 100)}%]'})}\n\n"
             
@@ -186,15 +189,8 @@ def extract_dem():
 
 
 # =====================================================================
-# SERVER STARTUP
+# FRONTEND STATIC ROUTES
 # =====================================================================
-if __name__ == '__main__':
-    print("🚀 GIS Gateway Backend Online! Listening for extraction requests...")
-    app.run(port=5000, debug=True)
-
-# Define the path to your frontend folder (one level up, then into 'frontend')
-FRONTEND_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../frontend'))
-
 @app.route('/')
 def serve_index():
     return send_from_directory(FRONTEND_DIR, 'index.html')
@@ -202,3 +198,12 @@ def serve_index():
 @app.route('/<path:filename>')
 def serve_frontend(filename):
     return send_from_directory(FRONTEND_DIR, filename)
+
+
+# =====================================================================
+# SERVER STARTUP
+# =====================================================================
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 8080))
+    print(f"🚀 GIS Gateway Backend Online! Listening on port {port}...")
+    app.run(host="0.0.0.0", port=port)
