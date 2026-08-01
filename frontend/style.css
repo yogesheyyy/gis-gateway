@@ -90,12 +90,11 @@ body { background-color: var(--bg-dark); color: var(--text-main); line-height: 1
 /* ================= THE CLICK-TO-EXPAND DRAWER & CORNER BORDERS ================= */
 .clickable-drawer {
     border-radius: 16px;
-    padding: 25px 30px; /* Small, compact initial size */
-    border: 1px solid transparent; /* Hidden initially to allow corner borders */
+    padding: 25px 30px; 
+    border: 1px solid transparent; 
     transition: all 0.3s ease;
     position: relative;
     
-    /* The I_ _I Corner Borders via Background Gradients */
     background: 
         linear-gradient(var(--text-muted), var(--text-muted)) top left / 20px 2px no-repeat,
         linear-gradient(var(--text-muted), var(--text-muted)) top left / 2px 20px no-repeat,
@@ -105,10 +104,9 @@ body { background-color: var(--bg-dark); color: var(--text-main); line-height: 1
         linear-gradient(var(--text-muted), var(--text-muted)) bottom left / 2px 20px no-repeat,
         linear-gradient(var(--text-muted), var(--text-muted)) bottom right / 20px 2px no-repeat,
         linear-gradient(var(--text-muted), var(--text-muted)) bottom right / 2px 20px no-repeat,
-        var(--bg-card); /* Glass background */
+        var(--bg-card);
 }
 
-/* Hover state BEFORE clicking (corners glow teal) */
 .clickable-drawer:not(.expanded):hover {
     background: 
         linear-gradient(var(--primary), var(--primary)) top left / 20px 2px no-repeat,
@@ -123,18 +121,17 @@ body { background-color: var(--bg-dark); color: var(--text-main); line-height: 1
     box-shadow: 0 0 20px rgba(6, 182, 212, 0.1);
 }
 
-/* AFTER CLICKING (Expanded State - Full Rounded Rectangle) */
 .clickable-drawer.expanded {
-    background: rgba(15, 23, 42, 0.85); /* Solid glass */
-    border: 1px solid var(--border-glass); /* Full rounded rectangle border */
+    background: rgba(15, 23, 42, 0.85); 
+    border: 1px solid var(--border-glass); 
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
 .widget-header { 
     display: flex; 
-    justify-content: center; /* Centers the text perfectly */
+    justify-content: center; 
     align-items: center; 
-    cursor: pointer; /* Turns mouse into a pointer hand */
+    cursor: pointer; 
     user-select: none;
 }
 
@@ -147,7 +144,7 @@ body { background-color: var(--bg-dark); color: var(--text-main); line-height: 1
 }
 
 .clickable-drawer:not(.expanded):hover .widget-header h2 {
-    color: var(--primary); /* Text glows teal on hover */
+    color: var(--primary); 
 }
 
 .widget-expandable {
@@ -164,14 +161,13 @@ body { background-color: var(--bg-dark); color: var(--text-main); line-height: 1
     padding-top: 0;
 }
 
-/* Trigger the expansion */
 .clickable-drawer.expanded .widget-expandable {
     grid-template-rows: 1fr; 
 }
 
 .clickable-drawer.expanded .widget-content {
     opacity: 1;
-    padding-top: 25px; /* Drops the content down below the header */
+    padding-top: 25px; 
     transition: opacity 0.4s ease 0.2s, padding-top 0.4s ease;
 }
 
@@ -228,18 +224,133 @@ select:focus, .dark-input:focus { border-color: var(--primary); box-shadow: 0 0 
     background: rgba(255, 255, 255, 0.1);
 }
 
-/* ================= LIGHT MODE VARIABLES ================= */
-body.light-mode {
-    --bg-dark: #f1f5f9; /* Crisp light gray background */
-    --bg-card: rgba(255, 255, 255, 0.7); /* White glass */
-    --primary: #0891b2; /* Darker teal for better contrast */
-    --secondary: #2563eb; 
-    --text-main: #0f172a; /* Dark navy text */
-    --text-muted: #475569; /* Slate gray text */
-    --border-glass: rgba(0, 0, 0, 0.1); /* Darker borders */
+/* ================= PEOPLE PAGE STYLES ================= */
+.people-main {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+    color: var(--text-main);
 }
 
-/* Adjustments for Light Mode Readability */
+.people-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.people-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.people-header p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+}
+
+.people-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+}
+
+.person-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-glass);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(12px);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.person-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(59, 130, 246, 0.5);
+}
+
+@media (min-width: 768px) {
+    .person-card {
+        flex-direction: row;
+    }
+}
+
+.person-image-container {
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 300px;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.person-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.person-details {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.person-details h2 {
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+    color: var(--text-main);
+}
+
+.person-role {
+    font-size: 1rem;
+    color: var(--primary);
+    font-weight: 500;
+    margin-bottom: 15px;
+}
+
+.person-bio {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.person-links .linkedin-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #0a66c2;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.person-links .linkedin-btn:hover {
+    background-color: #084e96;
+}
+
+/* ================= LIGHT MODE VARIABLES ================= */
+body.light-mode {
+    --bg-dark: #f1f5f9; 
+    --bg-card: rgba(255, 255, 255, 0.7); 
+    --primary: #0891b2; 
+    --secondary: #2563eb; 
+    --text-main: #0f172a; 
+    --text-muted: #475569; 
+    --border-glass: rgba(0, 0, 0, 0.1); 
+}
+
 body.light-mode .spatial-grid {
     background-image: 
         linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
