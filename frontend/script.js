@@ -98,9 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const encodedPath = encodeURIComponent(savePath);
             const varsParam = selectedVars.join(","); 
             
-            const hostIp = window.location.hostname;
-            const url = `http://${hostIp}:5000/api/download?start_year=${startYear}&end_year=${endYear}&vars=${varsParam}&path=${encodedPath}`;
-            
+            const url = `/api/download?start_year=${startYear}&end_year=${endYear}&vars=${varsParam}`;
             const eventSource = new EventSource(url);
 
             eventSource.onmessage = (event) => {
@@ -171,8 +169,8 @@ document.addEventListener("DOMContentLoaded", () => {
             demStatusText.textContent = "Generating Anonymous Token & Searching Catalog...";
 
             const encodedPath = encodeURIComponent(savePath);
-            const hostIp = window.location.hostname;
-            const url = `http://${hostIp}:5000/api/dem?min_lon=${minLon}&min_lat=${minLat}&max_lon=${maxLon}&max_lat=${maxLat}&path=${encodedPath}`;
+            const url = `/api/dem?min_lon=${minLon}&min_lat=${minLat}&max_lon=${maxLon}&max_lat=${maxLat}&path=${encodedPath}`;
+            const eventSource = new EventSource(url);
             
             const eventSource = new EventSource(url);
 
