@@ -20,8 +20,8 @@
             <nav class="main-nav">
                 <a href="index.html" class="nav-link">Home</a>
                 <a href="datasets.html" class="nav-link">Datasets</a>
-                <a href="contact.html" class="nav-link active">Contact</a>
                 <a href="people.html" class="nav-link">People</a>
+                <a href="contact.html" class="nav-link active">Contact</a>
             </nav>
             <div class="nav-actions">
                 <a href="donate.html" class="donate-btn">Donate <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></a>
@@ -35,24 +35,33 @@
             <h1 class="hero-title" style="font-size: 3rem;">Initiate Contact</h1>
         </div>
 
-        <div class="glass-card widget-card" style="max-width: 600px;">
+        <div class="glass-card widget-card" style="max-width: 600px; margin: 0 auto;">
             <p class="description" style="border: none; background: transparent; padding: 0; margin-bottom: 30px; text-align: center;">
                 Have a question about the meteorological datasets, pipeline integration, or want to report an issue? Send us a secure transmission.
             </p>
             
-            <form class="contact-form" onsubmit="event.preventDefault(); alert('Message transmitted successfully!');">
+            <!-- Connected to Web3Forms API -->
+            <form action="https://api.web3forms.com/submit" method="POST" class="contact-form">
+                
+                <!-- Your Web3Forms Access Key -->
+                <input type="hidden" name="access_key" value="f2ac594e-0ff9-4692-8c77-c962ac6f8f6e">
+
                 <div class="input-group">
                     <label>Designation / Name</label>
-                    <input type="text" required placeholder="Your Name" class="dark-input">
+                    <input type="text" name="name" required placeholder="Your Name" class="dark-input">
                 </div>
                 <div class="input-group">
                     <label>Comms Link / Email</label>
-                    <input type="email" required placeholder="you@institution.edu" class="dark-input">
+                    <input type="email" name="email" required placeholder="you@institution.edu" class="dark-input">
                 </div>
                 <div class="input-group">
                     <label>Message Payload</label>
-                    <textarea required rows="5" placeholder="How can we assist your mission?" class="dark-input" style="resize: vertical;"></textarea>
+                    <textarea name="message" required rows="5" placeholder="How can we assist your mission?" class="dark-input" style="resize: vertical;"></textarea>
                 </div>
+
+                <!-- Honeypot Spam Protection -->
+                <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
+
                 <button type="submit" class="glow-btn" style="width: 100%; margin-top: 10px; justify-content: center;">
                     Transmit Message
                 </button>
