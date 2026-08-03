@@ -6,7 +6,7 @@ import requests
 import xarray as xr
 import imdlib as imd
 import planetary_computer  # <-- The cryptographic hero!
-from flask import Flask, Response, request, send_file
+from flask import Flask, Response, request, send_file, send_from_directory
 from flask_cors import CORS
 
 app = Flask(__name__)
