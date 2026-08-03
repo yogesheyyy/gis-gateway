@@ -1,12 +1,13 @@
 import os
 import json
+import io
+import zipfile
 import requests  
 import xarray as xr
 import imdlib as imd
-import planetary_computer  # <-- The new cryptographic hero!
-from flask import Flask, Response, request
+import planetary_computer  # <-- The cryptographic hero!
+from flask import Flask, Response, request, send_file
 from flask_cors import CORS
-from flask import send_from_directory
 
 app = Flask(__name__)
 CORS(app)
@@ -29,6 +30,33 @@ def save_netcdf(ds, var, out_file):
 
 
 # =====================================================================
+# FILE ARCHIVER (ZIP HELPER) FOR BROWSER DOWNLOADS
+# =====================================================================
+@app.route('/api/download-zip')
+def download_zip():
+    folder_path = request.args.get('path', type=str)
+    if not folder_path or not os.path.exists(folder_path):
+        return {"error": "Invalid or missing folder path"}, 400
+    
+    memory_file = io.BytesIO()
+    with zipfile.ZipFile(memory_file, 'w', zipfile.ZIP_DEFLATED) as zf:
+        for root, dirs, files in os.walk(folder_path):
+            for file in files:
+                file_path = os.path.join(root, file)
+                arcname = os.path.relpath(file_path, folder_path)
+                zf.write(file_path, arcname)
+    
+    memory_file.seek(0)
+    zip_name = os.path.basename(folder_path) + "_archive.zip"
+    return send_file(
+        memory_file, 
+        mimetype='application/zip', 
+        as_attachment=True, 
+        download_name=zip_name
+    )
+
+
+# =====================================================================
 # 1. IMD GRIDDED DATA PIPELINE
 # =====================================================================
 @app.route('/api/download')
@@ -38,7 +66,6 @@ def download_imd_data():
     vars_param = request.args.get('vars', type=str)
     out_dir = request.args.get('path', type=str)
 
-    # Fallback to default directory if path is not sent by frontend
     if not out_dir:
         out_dir = os.path.join(os.getcwd(), 'downloads')
 
@@ -102,7 +129,9 @@ def download_imd_data():
                 except Exception as e:
                     yield f"data: {json.dumps({'progress': base_progress + progress_step, 'message': f'Warning: Failed to process {var.upper()}: {str(e)}'})}\n\n"
 
-            yield f"data: {json.dumps({'progress': 100, 'message': f'Complete! Files saved to: {out_dir}'})}\n\n"
+            # Final success event includes the download url for the zip package
+            zip_url = f"/api/download-zip?path={out_dir}"
+            yield f"data: {json.dumps({'progress': 100, 'message': f'Complete! Preparing download...', 'download_url': zip_url})}\n\n"
             
         except Exception as e:
             yield f"data: {json.dumps({'progress': 0, 'message': f'Execution failed: {str(e)}'})}\n\n"
@@ -180,7 +209,9 @@ def extract_dem():
                                 if downloaded % (1024 * 1024) <= chunk_size:
                                     yield f"data: {json.dumps({'progress': int(overall_progress), 'message': f'Downloading Tile {i+1}/{total_tiles} [{int(file_percent * 100)}%]'})}\n\n"
             
-            yield f"data: {json.dumps({'progress': 100, 'message': f'All DEM tiles extracted successfully to: {out_dir}'})}\n\n"
+            # Final success event includes the download url for the zip package
+            zip_url = f"/api/download-zip?path={out_dir}"
+            yield f"data: {json.dumps({'progress': 100, 'message': f'All DEM tiles extracted successfully!', 'download_url': zip_url})}\n\n"
         
         except Exception as e:
             yield f"data: {json.dumps({'progress': 0, 'message': f'Pipeline Error: {str(e)}'})}\n\n"
