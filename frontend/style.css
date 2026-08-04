@@ -340,6 +340,106 @@ select:focus, .dark-input:focus { border-color: var(--primary); box-shadow: 0 0 
     background-color: #084e96;
 }
 
+/* ================= ENVELOPE OVERLAY & SUCCESS SCREEN ================= */
+.envelope-overlay, .success-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.envelope-overlay.active, .success-screen.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Envelope Styling */
+.envelope-wrapper {
+    text-align: center;
+    color: #fff;
+}
+
+.envelope {
+    position: relative;
+    width: 160px;
+    height: 100px;
+    background: #0077b6;
+    border-radius: 4px;
+    margin: 0 auto 20px auto;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    animation: flyEnvelope 1.5s ease-in-out infinite alternate;
+}
+
+.envelope-flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-left: 80px solid transparent;
+    border-right: 80px solid transparent;
+    border-top: 60px solid #00b4d8;
+    transform-origin: top;
+    transition: transform 0.4s ease;
+}
+
+.anim-text {
+    font-family: inherit;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+}
+
+/* Envelope Flying Keyframes */
+@keyframes flyEnvelope {
+    0% { transform: translateY(0px) rotate(0deg); }
+    100% { transform: translateY(-15px) rotate(2deg); }
+}
+
+/* Success Screen Styling */
+.success-content {
+    background: #ffffff;
+    color: #333;
+    padding: 40px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+}
+
+.success-icon {
+    width: 60px;
+    height: 60px;
+    background: #2ec4b6;
+    color: white;
+    font-size: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin: 0 auto 20px auto;
+}
+
+.success-content button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: #0077b6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
 /* ================= LIGHT MODE VARIABLES ================= */
 body.light-mode {
     --bg-dark: #f1f5f9; 

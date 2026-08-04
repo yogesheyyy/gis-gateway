@@ -189,14 +189,20 @@
 
         <!-- ================= CONTACT PAGE ================= -->
         <section id="contact" class="page-section">
-            <div class="glass-card widget-card" style="text-align: center;">
+            <div class="glass-card widget-card" style="text-align: center; max-width: 600px; margin: 0 auto;">
                 <h2>Contact Us</h2>
-                <p class="description" style="border: none; background: transparent; padding: 0;">Have a question about the datasets? Drop us a line.</p>
-                <form class="contact-form" onsubmit="event.preventDefault(); alert('Message sent successfully!');">
-                    <input type="text" required placeholder="Your Name" class="dark-input">
-                    <input type="email" required placeholder="you@institution.edu" class="dark-input">
-                    <textarea required rows="4" placeholder="How can we help?" class="dark-input" style="resize: vertical;"></textarea>
-                    <button type="submit" class="glow-btn" style="width: 100%;">Send Message</button>
+                <p class="description" style="border: none; background: transparent; padding: 0; margin-bottom: 20px;">Have a question about the datasets? Drop us a line.</p>
+                <form id="contactForm" class="contact-form">
+                    <div style="margin-bottom: 15px;">
+                        <input type="text" id="contactName" required placeholder="Your Name" class="dark-input" style="width: 100%;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <input type="email" id="contactEmail" required placeholder="you@institution.edu" class="dark-input" style="width: 100%;">
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <textarea id="contactMessage" required rows="4" placeholder="How can we help?" class="dark-input" style="resize: vertical; width: 100%;"></textarea>
+                    </div>
+                    <button type="submit" class="glow-btn" style="width: 100%;"><span>Send Message</span></button>
                 </form>
             </div>
         </section>
@@ -219,6 +225,28 @@
             </div>
         </section>
     </main>
+
+    <!-- Envelope Animation Overlay -->
+    <div id="envelopeOverlay" class="envelope-overlay">
+        <div class="envelope-wrapper">
+            <div class="envelope">
+                <div class="mail-body"></div>
+                <div class="envelope-flap"></div>
+                <div class="envelope-pocket"></div>
+            </div>
+            <p class="anim-text">Sending your message...</p>
+        </div>
+    </div>
+
+    <!-- Success Message Screen -->
+    <div id="successMessage" class="success-screen">
+        <div class="success-content">
+            <div class="success-icon">✓</div>
+            <h3>Message Sent Successfully!</h3>
+            <p>Thanks for reaching out. We'll get back to you soon.</p>
+            <button onclick="resetContactForm()">Send Another Message</button>
+        </div>
+    </div>
 
     <!-- Version 11.0 forces the browser to drop the cache! -->
     <script src="script.js?v=11.0"></script>

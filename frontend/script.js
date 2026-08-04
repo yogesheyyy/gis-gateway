@@ -442,4 +442,58 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    // ================= 8. CONTACT FORM & ENVELOPE ANIMATION =================
+    const contactForm = document.getElementById("contactForm");
+    const envelopeOverlay = document.getElementById("envelopeOverlay");
+    const successMessage = document.getElementById("successMessage");
+
+    if (contactForm) {
+        contactForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById("contactName").value;
+            const email = document.getElementById("contactEmail").value;
+            const message = document.getElementById("contactMessage").value;
+
+            // 1. Trigger Envelope Flying Animation Overlay
+            envelopeOverlay.classList.add("active");
+
+            try {
+                // 2. Call your deployed Flask backend endpoint
+                const response = await fetch('/api/send-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, message })
+                });
+
+                const result = await response.json();
+
+                // 3. Keep animation visible briefly, then transition to success screen
+                setTimeout(() => {
+                    envelopeOverlay.classList.remove("active");
+                    
+                    if (result.success) {
+                        successMessage.classList.add("active");
+                        contactForm.reset();
+                    } else {
+                        alert("Failed to send message: " + (result.message || "Unknown error"));
+                    }
+                }, 2500); // 2.5 seconds matching the visual flow
+
+            } catch (err) {
+                console.error("Network or Server error:", err);
+                envelopeOverlay.classList.remove("active");
+                alert("An error occurred while sending your message. Please check your network connection.");
+            }
+        });
+    }
 });
+
+// Reset view to send another message (exposed globally for inline buttons if needed)
+function resetContactForm() {
+    const successMessage = document.getElementById("successMessage");
+    if (successMessage) {
+        successMessage.classList.remove("active");
+    }
+}
