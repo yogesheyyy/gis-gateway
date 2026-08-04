@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const encodedPath = encodeURIComponent(savePath);
             const varsParam = selectedVars.join(","); 
             
-            const netcdfUrl = `/api/download?start_year=${startYear}&end_year=${endYear}&vars=${varsParam}`;
+            const netcdfUrl = `/api/download?start_year=${startYear}&end_year=${endYear}&vars=${varsParam}&path=${encodedPath}`;
             const netcdfEventSource = new EventSource(netcdfUrl);
 
             netcdfEventSource.onmessage = (event) => {
@@ -116,8 +116,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (data.progress === 100) {
                     netcdfEventSource.close();
+                    
+                    // Automatically trigger the file download in the browser
+                    if (data.download_url) {
+                        window.location.href = data.download_url;
+                    }
+
                     setTimeout(() => {
-                        alert(`Extraction Complete! NetCDF files generated successfully in ${savePath}`);
+                        alert(`Extraction Complete! NetCDF files generated and downloaded successfully.`);
                         downloadBtn.disabled = false;
                         progressSection.classList.add("hidden");
                         progressBar.style.width = "0%";
@@ -188,8 +194,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (data.progress === 100) {
                     demEventSource.close();
+                    
+                    // Automatically trigger the file download in the browser
+                    if (data.download_url) {
+                        window.location.href = data.download_url;
+                    }
+
                     setTimeout(() => {
-                        alert(`Extraction Complete! Copernicus DEM tiles generated successfully in ${savePath}`);
+                        alert(`Extraction Complete! Copernicus DEM tiles generated and downloaded successfully.`);
                         demDownloadBtn.disabled = false;
                         demProgressSection.classList.add("hidden");
                         demProgressBar.style.width = "0%";
@@ -271,9 +283,8 @@ document.addEventListener("DOMContentLoaded", () => {
             particlesArray = [];
             let numberOfParticles = (canvas.height * canvas.width) / 12000;
             
-            // Check theme dynamically
             const isLight = document.body.classList.contains('light-mode');
-            const pColor = isLight ? '#0891b2' : '#06b6d4'; // Darker teal in light mode
+            const pColor = isLight ? '#0891b2' : '#06b6d4';
             
             for (let i = 0; i < numberOfParticles; i++) {
                 let size = (Math.random() * 2) + 1;
@@ -298,7 +309,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (distance < (canvas.width / 10) * (canvas.height / 10)) {
                         opacityValue = 1 - (distance / 20000);
                         
-                        // Switch connecting lines to dark navy in light mode
                         ctx.strokeStyle = isLight ? `rgba(15, 23, 42, ${opacityValue})` : `rgba(59, 130, 246, ${opacityValue})`;
                         ctx.lineWidth = 1;
                         ctx.beginPath();
@@ -323,7 +333,6 @@ document.addEventListener("DOMContentLoaded", () => {
         initNetwork();
         animateNetwork();
         
-        // Expose initNetwork so the toggle button can trigger a re-draw
         window.updateNetworkTheme = () => {
             initNetwork();
         };
@@ -406,7 +415,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const sunIcon = document.getElementById('sun-icon');
     const moonIcon = document.getElementById('moon-icon');
     
-    // 1. Check LocalStorage on page load
     if (localStorage.getItem('theme') === 'light') {
         document.body.classList.add('light-mode');
         if (sunIcon && moonIcon) {
@@ -415,12 +423,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // 2. Setup the Click Listener
     if (themeToggleBtn) {
         themeToggleBtn.addEventListener('click', () => {
             document.body.classList.toggle('light-mode');
             
-            // Swap icons and update storage
             if (document.body.classList.contains('light-mode')) {
                 sunIcon.style.display = 'none';
                 moonIcon.style.display = 'block';
@@ -431,7 +437,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 localStorage.setItem('theme', 'dark');
             }
             
-            // Trigger the background canvas to redraw with the new colors immediately
             if (typeof window.updateNetworkTheme === "function") {
                 window.updateNetworkTheme();
             }
