@@ -237,10 +237,10 @@ def send_email():
             return {"success": False, "message": "Email and message are required."}, 400
 
         # Zoho Mail SMTP Configuration for custom domains
-        smtp_server = "smtppro.zoho.com" 
+        smtp_server = "smtp.zoho.in" 
         smtp_port = 465
         zoho_user = "contact@gisgateway.co.in"
-        zoho_password = os.environ.get("ZOHO_MAIL_PASSWORD")
+        zoho_password = os.environ.get("H9g1 3uRr 5fQj")
 
         if not zoho_password:
             return {"success": False, "message": "Email configuration missing on server (ZOHO_MAIL_PASSWORD not set)."}, 500
