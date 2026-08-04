@@ -2,6 +2,9 @@ import os
 import json
 import io
 import zipfile
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 import requests  
 import xarray as xr
 import imdlib as imd
@@ -132,7 +135,7 @@ def download_imd_data():
             # Final success event includes the download url for the zip package
             zip_url = f"/api/download-zip?path={out_dir}"
             yield f"data: {json.dumps({'progress': 100, 'message': f'Complete! Preparing download...', 'download_url': zip_url})}\n\n"
-            
+        
         except Exception as e:
             yield f"data: {json.dumps({'progress': 0, 'message': f'Execution failed: {str(e)}'})}\n\n"
 
@@ -217,6 +220,49 @@ def extract_dem():
             yield f"data: {json.dumps({'progress': 0, 'message': f'Pipeline Error: {str(e)}'})}\n\n"
 
     return Response(generate_progress(), mimetype='text/event-stream')
+
+
+# =====================================================================
+# 3. CONTACT FORM EMAIL PIPELINE (ZOHO MAIL)
+# =====================================================================
+@app.route('/api/send-email', methods=['POST'])
+def send_email():
+    try:
+        data = request.json
+        sender_email = data.get('email')
+        sender_name = data.get('name', 'Anonymous')
+        message_body = data.get('message')
+
+        if not sender_email or not message_body:
+            return {"success": False, "message": "Email and message are required."}, 400
+
+        # Zoho Mail SMTP Configuration for custom domains
+        smtp_server = "smtppro.zoho.com" 
+        smtp_port = 465
+        zoho_user = "contact@gisgateway.co.in"
+        zoho_password = os.environ.get("ZOHO_MAIL_PASSWORD")
+
+        if not zoho_password:
+            return {"success": False, "message": "Email configuration missing on server (ZOHO_MAIL_PASSWORD not set)."}, 500
+
+        # Construct the email
+        msg = MIMEMultipart()
+        msg['From'] = zoho_user
+        msg['To'] = zoho_user
+        msg['Reply-To'] = sender_email
+        msg['Subject'] = f"New Message from GIS Gateway: {sender_name}"
+
+        body = f"Sender Name/Handle: {sender_name}\nSender Email: {sender_email}\n\nMessage:\n{message_body}"
+        msg.attach(MIMEText(body, 'plain'))
+
+        # Send via Zoho SSL port
+        with smtplib.SMTP_SSL(smtp_server, smtp_port) as server:
+            server.login(zoho_user, zoho_password)
+            server.sendmail(zoho_user, zoho_user, msg.as_string())
+
+        return {"success": True, "message": "Email sent successfully!"}
+    except Exception as e:
+        return {"success": False, "message": str(e)}, 500
 
 
 # =====================================================================
