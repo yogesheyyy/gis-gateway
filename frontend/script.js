@@ -497,3 +497,60 @@ function resetContactForm() {
         successMessage.classList.remove("active");
     }
 }
+// Copy UPI ID functionality
+function copyUpiId() {
+    const upiElement = document.getElementById('upiText').textContent;
+    navigator.clipboard.writeText(upiElement).then(() => {
+        alert("UPI ID copied to clipboard!");
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+    });
+}
+
+// Step 1: User clicks "I've Sent the Payment" -> Open Modal
+function confirmPayment() {
+    document.getElementById('donationModal').style.display = 'flex';
+}
+
+// Step 2: If they click "Skip"
+function skipDonationDetails() {
+    document.getElementById('donationModal').style.display = 'none';
+    triggerSuccessAnimation();
+}
+
+// Step 3: If they fill out name/email and submit
+async function submitDonationDetails(event) {
+    event.preventDefault();
+    const name = document.getElementById('donorName').value || "Supporter";
+    const email = document.getElementById('donorEmail').value;
+
+    document.getElementById('donationModal').style.display = 'none';
+
+    // Send data to backend to trigger thank-you email via Zoho
+    if (email) {
+        try {
+            await fetch('/api/log-donor', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email })
+            });
+        } catch (err) {
+            console.log("Could not reach backend log route", err);
+        }
+    }
+
+    triggerSuccessAnimation();
+}
+
+// Step 4: Fire the green tick checkmark animation
+function triggerSuccessAnimation() {
+    const btn = document.getElementById('paidBtn');
+    const btnText = document.getElementById('btnText');
+    const checkmarkAnim = document.getElementById('checkmarkAnim');
+    const successNote = document.getElementById('successNote');
+
+    btnText.style.display = 'none';
+    checkmarkAnim.style.display = 'inline-block';
+    btn.classList.add('success-state');
+    successNote.style.display = 'block';
+}

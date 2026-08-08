@@ -27,7 +27,6 @@
                 <a href="donate.html" class="donate-btn" style="background: white; color: var(--bg-dark);">Donate <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></a>
             </div>
         </div>
-        
     </header>
 
     <main class="dashboard page-fade-in">
@@ -39,28 +38,60 @@
             </p>
         </div>
 
-        <div class="glass-card widget-card" style="max-width: 600px; text-align: center;">
-            <h3 style="margin-bottom: 10px;">One-Time Contribution</h3>
-            <p class="description" style="border: none; background: transparent; padding: 0; margin-bottom: 30px;">
-                Your support directly funds server uptime, automated Python backend maintenance, and future dataset expansions.
+        <div class="glass-card widget-card" style="max-width: 600px; text-align: center; position: relative;">
+            <div class="qr-badge" style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #06b6d4; color: #0f172a; font-size: 0.75rem; font-weight: bold; padding: 4px 12px; border-radius: 20px; text-transform: uppercase;">Zero Fees • 100% Direct</div>
+            
+            <h3 style="margin-bottom: 10px;">Scan & Support via GPay / UPI</h3>
+            <p class="description" style="border: none; background: transparent; padding: 0; margin-bottom: 20px; color: var(--text-muted);">
+                Scan using Google Pay, PhonePe, Paytm, or any UPI app to transfer instantly with zero cuts.
             </p>
             
-            <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 30px;">
-                <button class="dark-input" style="width: auto; cursor: pointer; text-align: center; font-weight: 600; padding: 14px 24px;">€ 10</button>
-                <button class="dark-input" style="width: auto; cursor: pointer; text-align: center; font-weight: 600; padding: 14px 24px;">€ 20</button>
-                <button class="dark-input" style="width: auto; cursor: pointer; text-align: center; font-weight: 600; padding: 14px 24px;">€ 50</button>
+            <div class="qr-wrapper" style="margin: 15px auto; background: white; padding: 15px; border-radius: 8px; display: inline-block;">
+                <img src="gpay_qr.png" alt="Google Pay QR Code" class="gpay-qr-img" style="width: 180px; height: 180px; object-fit: contain; display: block;">
             </div>
             
-            <button class="glow-btn" style="width: 100%; margin-bottom: 20px; justify-content: center;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
-                Donate via Secure Checkout
-            </button>
+            <div class="upi-id-box" style="margin: 20px 0; background: rgba(30, 41, 59, 0.8); padding: 12px 15px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255, 255, 255, 0.1);">
+                <span style="color: #e2e8f0; font-size: 0.95rem;">UPI ID: <strong id="upiText">yourname@okaxis</strong></span>
+                <button onclick="copyUpiId()" class="copy-btn" style="background: #06b6d4; color: #0f172a; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer;">Copy ID</button>
+            </div>
+
+            <!-- Interactive Payment Confirmation Button -->
+            <div class="payment-confirm-box" style="margin-top: 25px;">
+                <button id="paidBtn" class="glow-btn" style="width: 100%; margin-bottom: 10px; justify-content: center; display: flex; align-items: center;" onclick="confirmPayment()">
+                    <span id="btnText">I've Sent the Payment</span>
+                    <div id="checkmarkAnim" class="checkmark-container" style="display: none; margin-left: 8px;">
+                        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" style="width: 20px; height: 20px;">
+                            <circle class="checkmark__circle" cx="26" cy="26" r="24" fill="none"/>
+                            <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                        </svg>
+                    </div>
+                </button>
+                <p id="successNote" class="success-note" style="display: none; margin-top: 10px; color: #34d399; font-size: 0.9rem; font-weight: 500;">❤️ Thank you so much for fueling GIS Gateway!</p>
+            </div>
             
-            <p style="font-size: 0.8rem; color: var(--text-muted); opacity: 0.7;">
-                Transactions are encrypted and processed securely. GIS Gateway is an independent open-source initiative.
+            <p style="font-size: 0.8rem; color: var(--text-muted); opacity: 0.7; margin-top: 20px;">
+                Transactions are direct and secure. GIS Gateway is an independent open-source initiative.
             </p>
         </div>
     </main>
+
+    <!-- Donation Shoutout & Verification Modal -->
+    <div id="donationModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h3>Thank you for supporting! 💖</h3>
+            <p>Drop your details if you'd like a personal shoutout or a thank-you note from the GIS Gateway team.</p>
+            
+            <form id="donationForm" onsubmit="submitDonationDetails(event)">
+                <input type="text" id="donorName" placeholder="Your Name (Optional)" class="modal-input">
+                <input type="email" id="donorEmail" placeholder="Your Email (Optional)" class="modal-input">
+                
+                <div class="modal-buttons" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px;">
+                    <button type="button" class="secondary-btn" onclick="skipDonationDetails()">Skip</button>
+                    <button type="submit" class="primary-btn">Confirm & Support</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script src="script.js?v=7.0"></script>
 </body>
