@@ -211,18 +211,35 @@
 
         <!-- ================= DONATE PAGE ================= -->
         <section id="donate" class="page-section">
-            <div class="hero-container">
-                <h1 style="font-size: 2.5rem;">Support the Project</h1>
-                <p class="hero-subtitle">Keep the spatial data pipeline running and open-source.</p>
-                <div class="glass-card widget-card" style="text-align: center;">
-                    <h3>One-Time Donation</h3>
-                    <p style="margin-bottom: 20px; color: var(--text-muted);">Support ongoing server costs and Python backend updates.</p>
-                    <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
-                        <button class="dark-input" style="width: auto; cursor: pointer; text-align: center;">₹ 10</button>
-                        <button class="dark-input" style="width: auto; cursor: pointer; text-align: center;">₹ 50</button>
-                        <button class="dark-input" style="width: auto; cursor: pointer; text-align: center;">₹ 100</button>
+            <div class="donate-container">
+                <h1 style="font-size: 2.5rem; margin-bottom: 10px;">Support the Project</h1>
+                <p class="hero-subtitle" style="margin-bottom: 30px;">Keep the spatial data pipeline running and open-source.</p>
+                
+                <div class="donation-card">
+                    <div class="qr-badge">Scan & Pay via GPay / UPI</div>
+                    
+                    <div class="qr-wrapper">
+                        <!-- Make sure your QR code image is named 'gpay-qr.png' in your root folder -->
+                        <img src="gpay-qr.png" alt="Google Pay QR Code" class="gpay-qr-img">
                     </div>
-                    <button class="glow-btn" style="width: 100%; margin-bottom: 10px;">Donate via PayPal</button>
+                    
+                    <div class="upi-id-box">
+                        <span id="upiText">gisgateway@okaxis</span>
+                        <button class="copy-btn" onclick="copyUpiId()">Copy ID</button>
+                    </div>
+
+                    <div class="payment-confirm-box">
+                        <button id="paidBtn" class="glow-btn confirm-action-btn" onclick="confirmPayment()" style="width: 100%;">
+                            <span id="btnText">I've Sent the Payment</span>
+                            <span id="checkmarkAnim" class="checkmark-container" style="display: none;">
+                                <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                                    <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                                    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                                </svg>
+                            </span>
+                        </button>
+                        <p id="successNote" class="success-note" style="display: none;">Thank you for your generous support!</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -247,6 +264,22 @@
             <h3>Message Sent Successfully!</h3>
             <p>Thanks for reaching out. We'll get back to you soon.</p>
             <button onclick="resetContactForm()">Send Another Message</button>
+        </div>
+    </div>
+
+    <!-- Donation Details Modal -->
+    <div id="donationModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h3>Thank You for Supporting!</h3>
+            <p>Optional: Enter your details so we can send you a personalized thank-you note.</p>
+            <form onsubmit="submitDonationDetails(event)">
+                <input type="text" id="donorName" placeholder="Your Name" class="modal-input">
+                <input type="email" id="donorEmail" placeholder="Your Email Address" class="modal-input">
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px;">
+                    <button type="button" class="secondary-btn" onclick="skipDonationDetails()">Skip</button>
+                    <button type="submit" class="primary-btn">Confirm</button>
+                </div>
+            </form>
         </div>
     </div>
 
