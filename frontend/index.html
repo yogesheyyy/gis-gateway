@@ -93,48 +93,132 @@
         <section id="datasets" class="page-section">
             <div class="widget-grid-layout">
                 
-                <!-- 1. IMD WIDGET -->
+                <!-- 1. IMD WIDGET (Enhanced with IMDWEB & Citation Support) -->
                 <div class="glass-card widget-card clickable-drawer">
                     <div class="widget-header">
-                        <h2>IMD Gridded Data Downloader</h2>
+                        <h2>IMD Gridded Data Downloader & Analysis</h2>
                     </div>
                     <div class="widget-expandable">
                         <div class="widget-content">
                             <div class="tags" style="margin-bottom: 15px;">
                                 <span class="tag">0.25° x 0.25°</span>
                                 <span class="tag">Daily</span>
-                                <span class="tag">NetCDF</span>
+                                <span class="tag">NetCDF / CSV</span>
                             </div>
                             <p class="description">
                                 High Spatial Resolution Long Period Daily Gridded Rainfall and Temperature Data Set Over India. 
                                 Rainfall (1901-2025). Temperature (1951-2025).
                             </p>
-                            <div class="checkbox-group">
-                                <span class="group-label">Variables:</span>
-                                <label class="custom-checkbox"><input type="checkbox" id="var-rain" value="rain" checked><span class="checkmark"></span> Rainfall</label>
-                                <label class="custom-checkbox"><input type="checkbox" id="var-tmin" value="tmin" checked><span class="checkmark"></span> Min Temp</label>
-                                <label class="custom-checkbox"><input type="checkbox" id="var-tmax" value="tmax" checked><span class="checkmark"></span> Max Temp</label>
+
+                            <!-- Step 1: Mode Selection -->
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <label class="group-label"><strong>Step 1: Select Mode</strong></label><br>
+                                <div style="display: flex; gap: 15px; margin-top: 5px;">
+                                    <label><input type="radio" name="imd_mode" value="download" checked onclick="toggleImdMode('download')"> Download NetCDF</label>
+                                    <label><input type="radio" name="imd_mode" value="analysis" onclick="toggleImdMode('analysis')"> Analysis & Indices</label>
+                                </div>
                             </div>
+
+                            <!-- Step 2: Variable Selection -->
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <label class="group-label"><strong>Step 2: Select Variable</strong></label>
+                                <div class="checkbox-group" style="margin-top: 5px;">
+                                    <label class="custom-checkbox"><input type="radio" name="imd_var" value="rain" checked><span class="checkmark"></span> Rainfall</label>
+                                    <label class="custom-checkbox"><input type="radio" name="imd_var" value="tmin"><span class="checkmark"></span> Min Temp</label>
+                                    <label class="custom-checkbox"><input type="radio" name="imd_var" value="tmax"><span class="checkmark"></span> Max Temp</label>
+                                </div>
+                                <div style="margin-top: 5px;">
+                                    <label style="font-size: 13px;"><input type="checkbox" id="imd_realtime"> Real-time Data</label>
+                                </div>
+                            </div>
+
+                            <!-- Date Range -->
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <label class="group-label"><strong>Date / Year Range</strong></label>
+                                <div class="coordinate-input-grid" style="margin-top: 5px;">
+                                    <div class="input-group">
+                                        <label for="startYear">Start Year</label>
+                                        <select id="startYear" class="dark-input"></select>
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="endYear">End Year</label>
+                                        <select id="endYear" class="dark-input"></select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 3: Spatial Extent Type -->
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <label class="group-label"><strong>Step 3: Select Spatial Extent Type</strong></label>
+                                <div style="display: flex; gap: 15px; margin-top: 5px; margin-bottom: 10px;">
+                                    <label><input type="radio" name="imdSpatialType" value="point" checked onclick="setImdSpatialMode('point')"> Point</label>
+                                    <label><input type="radio" name="imdSpatialType" value="polygon" onclick="setImdSpatialMode('polygon')"> Polygon / GeoJSON</label>
+                                </div>
+                                
+                                <div id="imdPointInputs" class="coordinate-input-grid">
+                                    <div class="input-group">
+                                        <label for="imdLat">Latitude</label>
+                                        <input type="number" id="imdLat" placeholder="e.g. 13.08" class="dark-input" step="any" value="13.08">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="imdLon">Longitude</label>
+                                        <input type="number" id="imdLon" placeholder="e.g. 80.27" class="dark-input" step="any" value="80.27">
+                                    </div>
+                                </div>
+
+                                <div id="imdDropZone" class="drop-zone" style="display: none; border: 2px dashed var(--border-glass); padding: 15px; text-align: center; margin-top: 8px; border-radius: 4px;">
+                                    <p style="font-size: 12px; margin: 0;">Drag and Drop GeoJSON File here (max 5 MB)</p>
+                                    <input type="file" id="imdGeojsonFile" accept=".geojson,.json" style="display:none;">
+                                </div>
+                            </div>
+
+                            <!-- ANALYSIS SPECIFIC OPTIONS (Hidden by default) -->
+                            <div id="imdAnalysisOptions" style="display: none; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass); padding: 12px; border-radius: 6px; margin-bottom: 15px;">
+                                <div class="form-group" style="margin-bottom: 10px;">
+                                    <label style="font-size: 13px;"><strong>Aggregation Method</strong></label><br>
+                                    <div style="display: flex; gap: 10px; margin-top: 5px;">
+                                        <label style="font-size: 13px;"><input type="radio" name="imd_agg" value="mean" checked> Mean</label>
+                                        <label style="font-size: 13px;"><input type="radio" name="imd_agg" value="max"> Max</label>
+                                        <label style="font-size: 13px;"><input type="radio" name="imd_agg" value="min"> Min</label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label style="font-size: 13px;"><strong>Climate Indices (Yearly Basis)</strong></label>
+                                    <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 5px;">
+                                        <label style="font-size: 12px;"><input type="checkbox" name="imd_index" value="rainy_days"> Rainy days (drc)</label>
+                                        <label style="font-size: 12px;"><input type="checkbox" name="imd_index" value="heavy_precip"> Heavy precipitation days (d64)</label>
+                                        <label style="font-size: 12px;"><input type="checkbox" name="imd_index" value="consec_wet"> Consecutive wet days (cwd)</label>
+                                        <label style="font-size: 12px;"><input type="checkbox" name="imd_index" value="sdi"> Simple daily intensity index (sdii)</label>
+                                        <label style="font-size: 12px;"><input type="checkbox" name="imd_index" value="max_rain"> Maximum 1 day rainfall (rx1day)</label>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="controls-container">
-                                <div class="input-group">
-                                    <label for="startYear">Start Year</label>
-                                    <select id="startYear"></select>
-                                </div>
-                                <div class="input-group">
-                                    <label for="endYear">End Year</label>
-                                    <select id="endYear"></select>
-                                </div>
-                                <button id="downloadBtn" class="glow-btn"><span>Extract Data</span></button>
+                                <button id="downloadBtn" class="glow-btn" style="width: 100%;"><span>Extract Data</span></button>
                             </div>
-                            <div id="progressSection" class="progress-section hidden">
+
+                            <div id="progressSection" class="progress-section hidden" style="margin-top: 15px;">
                                 <div class="progress-header"><span id="statusText">Initializing...</span><span id="percentageText">0%</span></div>
                                 <div class="progress-bar-bg"><div id="progressBar" class="progress-bar-fill"></div></div>
                             </div>
+
+                            <!-- Citation Notice Footer -->
+                            <div class="citation-footer" style="background: rgba(0, 123, 255, 0.05); padding: 12px 15px; border-radius: 8px; border-left: 4px solid var(--accent-primary, #007bff); margin-top: 20px; font-size: 12px; color: inherit; line-height: 1.4;">
+                                <p style="margin: 0 0 4px 0;"><strong>Citation Notice:</strong></p>
+                                <p style="margin: 0 0 4px 0;">If you use IMDWEB or GIS Gateway gridded modules in your research, please cite:</p>
+                                <p style="margin: 0; font-style: italic;">
+                                    Nandi, S., Patel, P., & Swain, S. (2024). IMDWEB: An open source library for retrieval, processing and spatiotemporal exploratory assessments of gridded meteorological observation datasets over India. <em>Environmental Modelling & Software</em>, 171, 105898. 
+                                    <a href="https://doi.org/10.1016/j.envsoft.2024.105898" target="_blank" style="color: var(--accent-primary, #007bff); text-decoration: none;">https://doi.org/10.1016/j.envsoft.2024.105898</a>
+                                </p>
+                            </div>
+
                         </div>
                     </div>
                 </div>
 
-                <!-- 2. COPERNICUS DEM WIDGET -->
+               <!-- 2. COPERNICUS DEM WIDGET -->
                 <div class="glass-card widget-card clickable-drawer">
                     <div class="widget-header">
                         <h2>Copernicus Global DEM Extractor</h2>
@@ -149,6 +233,13 @@
                             <p class="description">
                                 High-precision 30-meter Digital Elevation Model (DEM) data retrieved dynamically via Microsoft Planetary Computer. No API keys required.
                             </p>
+
+                            <!-- DATA CITATION & ATTRIBUTION NOTICE -->
+                            <div style="font-size: 0.75rem; color: #999; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass); border-radius: 6px; padding: 8px 12px; margin-bottom: 20px; line-height: 1.4;">
+                                <strong style="color: #bbb;">Data Source & Attribution:</strong><br>
+                                Copernicus Global DEM (GLO-30) via Microsoft Planetary Computer.<br>
+                                <span style="font-size: 0.7rem; color: #777;">&copy; DLR e.V. 2010-2014 and &copy; Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA.</span>
+                            </div>
 
                             <span class="group-label" style="display: block; margin-bottom: 10px;">1. Draw Region on Map OR Enter Coordinates:</span>
                             
@@ -219,7 +310,6 @@
                     <div class="qr-badge">Scan & Pay via GPay / UPI</div>
                     
                     <div class="qr-wrapper">
-                        <!-- Make sure your QR code image is named 'gpay-qr.png' in your root folder -->
                         <img src="gpay-qr.png" alt="Google Pay QR Code" class="gpay-qr-img">
                     </div>
                     
@@ -282,6 +372,33 @@
             </form>
         </div>
     </div>
+
+    <!-- UI Helper Script for IMDWEB mode switches -->
+    <script>
+        function toggleImdMode(mode) {
+            const analysisDiv = document.getElementById('imdAnalysisOptions');
+            const actionBtn = document.getElementById('downloadBtn');
+            const btnSpan = actionBtn.querySelector('span');
+            if (mode === 'analysis') {
+                analysisDiv.style.display = 'block';
+                btnSpan.innerText = 'Extract & Download CSV Report';
+            } else {
+                analysisDiv.style.display = 'none';
+                btnSpan.innerText = 'Extract Data';
+            }
+        }
+        function setImdSpatialMode(type) {
+            const pointInputs = document.getElementById('imdPointInputs');
+            const dropZone = document.getElementById('imdDropZone');
+            if (type === 'polygon') {
+                pointInputs.style.display = 'none';
+                dropZone.style.display = 'block';
+            } else {
+                pointInputs.style.display = 'grid';
+                dropZone.style.display = 'none';
+            }
+        }
+    </script>
 
     <!-- Version 11.0 forces the browser to drop the cache! -->
     <script src="script.js?v=11.0"></script>

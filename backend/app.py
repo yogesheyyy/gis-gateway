@@ -9,6 +9,8 @@ import requests
 import xarray as xr
 import imdlib as imd
 import planetary_computer  # <-- The cryptographic hero!
+import pandas as pd
+import numpy as np
 from flask import Flask, Response, request, send_file, send_from_directory
 from flask_cors import CORS
 
@@ -60,7 +62,7 @@ def download_zip():
 
 
 # =====================================================================
-# 1. IMD GRIDDED DATA PIPELINE
+# 1. IMD GRIDDED DATA PIPELINE (UPDATED FOR ANALYSIS & POINT/POLYGON)
 # =====================================================================
 @app.route('/api/download')
 def download_imd_data():
@@ -68,6 +70,15 @@ def download_imd_data():
     end_year = request.args.get('end_year', type=int)
     vars_param = request.args.get('vars', type=str)
     out_dir = request.args.get('path', type=str)
+
+    # New parameters for Analysis & Spatial Subsetting
+    mode = request.args.get('mode', default='download', type=str)
+    spatial_type = request.args.get('spatial_type', default='point', type=str)
+    lat = request.args.get('lat', type=float)
+    lon = request.args.get('lon', type=float)
+    agg = request.args.get('agg', default='mean', type=str)
+    indices_param = request.args.get('indices', type=str)
+    indices = [idx.strip() for idx in indices_param.split(',')] if indices_param else []
 
     if not out_dir:
         out_dir = os.path.join(os.getcwd(), 'downloads')
@@ -80,7 +91,7 @@ def download_imd_data():
     def event_generator():
         try:
             os.makedirs(out_dir, exist_ok=True)
-            yield f"data: {json.dumps({'progress': 5, 'message': f'Initializing workspace for {start_year}-{end_year}...'})}\n\n"
+            yield f"data: {json.dumps({'progress': 5, 'message': f'Initializing workspace for {start_year}-{end_year} [Mode: {mode.upper()}]...'})}\n\n"
 
             progress_step = 90 / len(variables)
 
@@ -101,7 +112,7 @@ def download_imd_data():
                     
                     imd.get_data(var_type=var, start_yr=actual_start, end_yr=end_year, fn_format="yearwise", file_dir=out_dir)
 
-                    yield f"data: {json.dumps({'progress': base_progress + (progress_step * 0.6), 'message': f'Parsing gridded layers into xarray ({var.upper()})...'})}\n\n"
+                    yield f"data: {json.dumps({'progress': base_progress + (progress_step * 0.5), 'message': f'Parsing gridded layers into xarray ({var.upper()})...'})}\n\n"
                     
                     data = imd.open_data(var_type=var, start_yr=actual_start, end_yr=end_year, fn_format="yearwise", file_dir=out_dir)
                     
@@ -123,11 +134,58 @@ def download_imd_data():
                     ds.attrs["source"] = "India Meteorological Department gridded data"
                     ds.attrs["created_using"] = "imdlib and xarray"
                     ds.attrs["period"] = f"{actual_start}-{end_year}"
-                    
-                    out_file = os.path.join(out_dir, f"{var}_{actual_start}_{end_year}.nc")
 
-                    yield f"data: {json.dumps({'progress': base_progress + (progress_step * 0.9), 'message': f'Writing to local NetCDF file ({var.upper()})...'})}\n\n"
-                    save_netcdf(ds, var, out_file)
+                    # Handle Analysis / Indices mode vs Standard NetCDF download
+                    if mode == 'analysis':
+                        yield f"data: {json.dumps({'progress': base_progress + (progress_step * 0.7), 'message': f'Computing spatial extraction and climate indices ({var.upper()})...'})}\n\n"
+                        
+                        # Spatial subsetting if point specified
+                        da = ds[var]
+                        if spatial_type == 'point' and lat is not None and lon is not None:
+                            da = da.sel(lat=lat, lon=lon, method="nearest")
+                        elif spatial_type == 'polygon':
+                            # Fallback spatial aggregation if polygon bounds not explicitly passed
+                            if agg == 'mean':
+                                da = da.mean(dim=['lat', 'lon'], skipna=True)
+                            elif agg == 'max':
+                                da = da.max(dim=['lat', 'lon'], skipna=True)
+                            elif agg == 'min':
+                                da = da.min(dim=['lat', 'lon'], skipna=True)
+
+                        df = da.to_dataframe().reset_index()
+                        
+                        # Calculate climate indices if requested
+                        if indices and var == 'rain':
+                            df['time'] = pd.to_datetime(df['time'])
+                            df['year'] = df['time'].dt.year
+                            yearly_summary = []
+                            for yr, group in df.groupby('year'):
+                                row = {'year': yr}
+                                series = group[var]
+                                if 'rainy_days' in indices:
+                                    row['rainy_days_drc'] = int((series >= 2.5).sum())
+                                if 'heavy_precip' in indices:
+                                    row['heavy_precip_d64'] = int((series >= 64.4).sum())
+                                if 'consec_wet' in indices:
+                                    wet = (series >= 1.0).astype(int)
+                                    row['consec_wet_cwd'] = int(wet.groupby((~wet.astype(bool)).cumsum()).sum().max()) if len(wet) > 0 else 0
+                                if 'sdi' in indices:
+                                    wet_days = series[series >= 1.0]
+                                    row['sdii'] = float(wet_days.sum() / len(wet_days)) if len(wet_days) > 0 else 0.0
+                                if 'max_rain' in indices:
+                                    row['rx1day'] = float(series.max()) if len(series) > 0 else 0.0
+                                yearly_summary.append(row)
+                            
+                            df_out = pd.DataFrame(yearly_summary)
+                        else:
+                            df_out = df
+
+                        csv_file = os.path.join(out_dir, f"{var}_analysis_{actual_start}_{end_year}.csv")
+                        df_out.to_csv(csv_file, index=False)
+                    else:
+                        out_file = os.path.join(out_dir, f"{var}_{actual_start}_{end_year}.nc")
+                        yield f"data: {json.dumps({'progress': base_progress + (progress_step * 0.9), 'message': f'Writing to local NetCDF file ({var.upper()})...'})}\n\n"
+                        save_netcdf(ds, var, out_file)
                     
                 except Exception as e:
                     yield f"data: {json.dumps({'progress': base_progress + progress_step, 'message': f'Warning: Failed to process {var.upper()}: {str(e)}'})}\n\n"
