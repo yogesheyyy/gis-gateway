@@ -170,6 +170,12 @@
                                     <p style="font-size: 12px; margin: 0;">Drag and Drop GeoJSON File here (max 5 MB)</p>
                                     <input type="file" id="imdGeojsonFile" accept=".geojson,.json" style="display:none;">
                                 </div>
+
+                                <!-- Leaflet Map Container for Study Area / District Boundary -->
+                                <div id="imdMapContainer" style="display: none; margin-top: 10px;">
+                                    <label style="display: block; font-size: 12px; margin-bottom: 5px; color: #ccc;">Study Area / District Boundary Map:</label>
+                                    <div id="imdMap" style="height: 250px; width: 100%; border-radius: 8px; border: 1px solid var(--border-glass); z-index: 1;"></div>
+                                </div>
                             </div>
 
                             <!-- ANALYSIS SPECIFIC OPTIONS (Hidden by default) -->
@@ -373,7 +379,7 @@
         </div>
     </div>
 
-    <!-- UI Helper Script for IMDWEB mode switches -->
+    <!-- UI Helper Script for IMDWEB mode switches and map/dropdown initialization -->
     <script>
         function toggleImdMode(mode) {
             const analysisDiv = document.getElementById('imdAnalysisOptions');
@@ -387,17 +393,53 @@
                 btnSpan.innerText = 'Extract Data';
             }
         }
+
+        let imdMap = null;
         function setImdSpatialMode(type) {
             const pointInputs = document.getElementById('imdPointInputs');
             const dropZone = document.getElementById('imdDropZone');
+            const mapContainer = document.getElementById('imdMapContainer');
             if (type === 'polygon') {
                 pointInputs.style.display = 'none';
                 dropZone.style.display = 'block';
+                if (mapContainer) mapContainer.style.display = 'block';
+
+                // Initialize Leaflet Map for District / Study Area
+                if (!imdMap) {
+                    imdMap = L.map('imdMap').setView([13.08, 80.27], 7);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; OpenStreetMap contributors'
+                    }).addTo(imdMap);
+                } else {
+                    imdMap.invalidateSize();
+                }
             } else {
                 pointInputs.style.display = 'grid';
                 dropZone.style.display = 'none';
+                if (mapContainer) mapContainer.style.display = 'none';
             }
         }
+
+        // Populate Year Dropdowns on Load
+        document.addEventListener('DOMContentLoaded', () => {
+            const startYearSelect = document.getElementById('startYear');
+            const endYearSelect = document.getElementById('endYear');
+            if (startYearSelect && endYearSelect && startYearSelect.children.length === 0) {
+                for (let yr = 2026; yr >= 1901; yr--) {
+                    let opt1 = document.createElement('option');
+                    opt1.value = yr;
+                    opt1.textContent = yr;
+                    if (yr === 2000) opt1.selected = true;
+                    startYearSelect.appendChild(opt1);
+
+                    let opt2 = document.createElement('option');
+                    opt2.value = yr;
+                    opt2.textContent = yr;
+                    if (yr === 2025) opt2.selected = true;
+                    endYearSelect.appendChild(opt2);
+                }
+            }
+        });
     </script>
 
     <!-- Version 11.0 forces the browser to drop the cache! -->

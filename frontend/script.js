@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     
-    // ================= 1. PAGE ROUTING LOGIC (RESTORED) =================
+    // ================= 1. PAGE ROUTING LOGIC =================
     const navLinks = document.querySelectorAll('.nav-link, .route-btn');
     const pages = document.querySelectorAll('.page-section');
 
@@ -9,17 +9,19 @@ document.addEventListener("DOMContentLoaded", () => {
             e.preventDefault();
             
             const targetId = link.getAttribute('data-target');
+            if (!targetId) return;
             
             pages.forEach(page => page.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('active'));
             
-            document.getElementById(targetId).classList.add('active');
+            const targetPage = document.getElementById(targetId);
+            if (targetPage) targetPage.classList.add('active');
             
             if (link.classList.contains('nav-link')) {
                 link.classList.add('active');
             } else {
                 const targetNav = document.querySelector(`.nav-link[data-target="${targetId}"]`);
-                if(targetNav) targetNav.classList.add('active');
+                if (targetNav) targetNav.classList.add('active');
             }
         });
     });
@@ -38,7 +40,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const tmaxCheck = document.getElementById("var-tmax");
 
     function updateYearDropdowns() {
-        const hasTemperature = tminCheck.checked || tmaxCheck.checked;
+        if (!startYearSelect || !endYearSelect) return;
+        
+        const hasTemperature = (tminCheck && tminCheck.checked) || (tmaxCheck && tmaxCheck.checked);
         const minYear = hasTemperature ? 1951 : 1901;
 
         let currentStart = parseInt(startYearSelect.value) || 2020;
@@ -59,14 +63,14 @@ document.addEventListener("DOMContentLoaded", () => {
         endYearSelect.value = currentEnd;
     }
 
-    if(rainCheck) {
+    if (rainCheck && tminCheck && tmaxCheck) {
         rainCheck.addEventListener("input", updateYearDropdowns);
         tminCheck.addEventListener("input", updateYearDropdowns);
         tmaxCheck.addEventListener("input", updateYearDropdowns);
         updateYearDropdowns();
     }
 
-    if(downloadBtn) {
+    if (downloadBtn) {
         downloadBtn.addEventListener("click", () => {
             const startYear = parseInt(startYearSelect.value);
             const endYear = parseInt(endYearSelect.value);
@@ -77,9 +81,9 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             const selectedVars = [];
-            if (rainCheck.checked) selectedVars.push("rain");
-            if (tminCheck.checked) selectedVars.push("tmin");
-            if (tmaxCheck.checked) selectedVars.push("tmax");
+            if (rainCheck && rainCheck.checked) selectedVars.push("rain");
+            if (tminCheck && tminCheck.checked) selectedVars.push("tmin");
+            if (tmaxCheck && tmaxCheck.checked) selectedVars.push("tmax");
 
             if (selectedVars.length === 0) {
                 alert("Error: Please select at least one variable to extract.");
@@ -90,10 +94,10 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!savePath) return;
 
             downloadBtn.disabled = true;
-            progressSection.classList.remove("hidden");
-            progressBar.style.width = "0%";
-            percentageText.textContent = "0%";
-            statusText.textContent = "Establishing secure connection...";
+            if (progressSection) progressSection.classList.remove("hidden");
+            if (progressBar) progressBar.style.width = "0%";
+            if (percentageText) percentageText.textContent = "0%";
+            if (statusText) statusText.textContent = "Establishing secure connection...";
 
             const encodedPath = encodeURIComponent(savePath);
             const varsParam = selectedVars.join(","); 
@@ -104,9 +108,9 @@ document.addEventListener("DOMContentLoaded", () => {
             netcdfEventSource.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 
-                statusText.textContent = data.message;
-                progressBar.style.width = data.progress + "%";
-                percentageText.textContent = data.progress + "%";
+                if (statusText) statusText.textContent = data.message;
+                if (progressBar) progressBar.style.width = data.progress + "%";
+                if (percentageText) percentageText.textContent = data.progress + "%";
 
                 if (data.progress === 0) {
                     alert(`Pipeline Error: ${data.message}`);
@@ -117,7 +121,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (data.progress === 100) {
                     netcdfEventSource.close();
                     
-                    // Automatically trigger the file download in the browser
                     if (data.download_url) {
                         window.location.href = data.download_url;
                     }
@@ -125,15 +128,15 @@ document.addEventListener("DOMContentLoaded", () => {
                     setTimeout(() => {
                         alert(`Extraction Complete! NetCDF files generated and downloaded successfully.`);
                         downloadBtn.disabled = false;
-                        progressSection.classList.add("hidden");
-                        progressBar.style.width = "0%";
+                        if (progressSection) progressSection.classList.add("hidden");
+                        if (progressBar) progressBar.style.width = "0%";
                     }, 800);
                 }
             };
 
             netcdfEventSource.onerror = (err) => {
                 console.error("EventSource failed:", err);
-                statusText.textContent = "Connection lost. Is the backend running?";
+                if (statusText) statusText.textContent = "Connection lost. Is the backend running?";
                 netcdfEventSource.close();
                 downloadBtn.disabled = false;
             };
@@ -169,22 +172,21 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!savePath) return;
 
             demDownloadBtn.disabled = true;
-            demProgressSection.classList.remove("hidden");
-            demProgressBar.style.width = "0%";
-            demPercentageText.textContent = "0%";
-            demStatusText.textContent = "Generating Anonymous Token & Searching Catalog...";
+            if (demProgressSection) demProgressSection.classList.remove("hidden");
+            if (demProgressBar) demProgressBar.style.width = "0%";
+            if (demPercentageText) demPercentageText.textContent = "0%";
+            if (demStatusText) demStatusText.textContent = "Generating Anonymous Token & Searching Catalog...";
 
             const encodedPath = encodeURIComponent(savePath);
             const demUrl = `/api/dem?min_lon=${minLon}&min_lat=${minLat}&max_lon=${maxLon}&max_lat=${maxLat}&path=${encodedPath}`;
             const demEventSource = new EventSource(demUrl);
             
-
             demEventSource.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 
-                demStatusText.textContent = data.message;
-                demProgressBar.style.width = data.progress + "%";
-                demPercentageText.textContent = data.progress + "%";
+                if (demStatusText) demStatusText.textContent = data.message;
+                if (demProgressBar) demProgressBar.style.width = data.progress + "%";
+                if (demPercentageText) demPercentageText.textContent = data.progress + "%";
 
                 if (data.progress === 0 && data.message.includes("Error")) {
                     alert(`Pipeline Error: ${data.message}`);
@@ -195,7 +197,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (data.progress === 100) {
                     demEventSource.close();
                     
-                    // Automatically trigger the file download in the browser
                     if (data.download_url) {
                         window.location.href = data.download_url;
                     }
@@ -203,33 +204,32 @@ document.addEventListener("DOMContentLoaded", () => {
                     setTimeout(() => {
                         alert(`Extraction Complete! Copernicus DEM tiles generated and downloaded successfully.`);
                         demDownloadBtn.disabled = false;
-                        demProgressSection.classList.add("hidden");
-                        demProgressBar.style.width = "0%";
+                        if (demProgressSection) demProgressSection.classList.add("hidden");
+                        if (demProgressBar) demProgressBar.style.width = "0%";
                     }, 800);
                 }
             };
 
             demEventSource.onerror = (err) => {
                 console.error("EventSource failed:", err);
-                demStatusText.textContent = "Connection lost. Is the backend running?";
+                if (demStatusText) demStatusText.textContent = "Connection lost. Is the backend running?";
                 demEventSource.close();
                 demDownloadBtn.disabled = false;
             };
         });
     }
 
-    // ================= 4. SPATIAL NETWORK ANIMATION (RESPONSIVE TO THEME) =================
+    // ================= 4. SPATIAL NETWORK ANIMATION =================
     const canvas = document.getElementById('spatial-network');
     
-    if(canvas) {
+    if (canvas) {
         const ctx = canvas.getContext('2d');
-        
         let particlesArray;
         let mouse = { x: null, y: null, radius: 150 };
 
         window.addEventListener('mousemove', function(event) {
-            mouse.x = event.x;
-            mouse.y = event.y;
+            mouse.x = event.clientX;
+            mouse.y = event.clientY;
         });
 
         function setupCanvas() {
@@ -282,14 +282,13 @@ document.addEventListener("DOMContentLoaded", () => {
         function initNetwork() {
             particlesArray = [];
             let numberOfParticles = (canvas.height * canvas.width) / 12000;
-            
             const isLight = document.body.classList.contains('light-mode');
             const pColor = isLight ? '#0891b2' : '#06b6d4';
             
             for (let i = 0; i < numberOfParticles; i++) {
                 let size = (Math.random() * 2) + 1;
-                let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
-                let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+                let x = (Math.random() * ((window.innerWidth - size * 2) - (size * 2)) + size * 2);
+                let y = (Math.random() * ((window.innerHeight - size * 2) - (size * 2)) + size * 2);
                 let directionX = (Math.random() * 1) - 0.5;
                 let directionY = (Math.random() * 1) - 0.5;
 
@@ -308,7 +307,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     
                     if (distance < (canvas.width / 10) * (canvas.height / 10)) {
                         opacityValue = 1 - (distance / 20000);
-                        
                         ctx.strokeStyle = isLight ? `rgba(15, 23, 42, ${opacityValue})` : `rgba(59, 130, 246, ${opacityValue})`;
                         ctx.lineWidth = 1;
                         ctx.beginPath();
@@ -322,7 +320,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         function animateNetwork() {
             requestAnimationFrame(animateNetwork);
-            ctx.clearRect(0, 0, innerWidth, innerHeight);
+            ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
             for (let i = 0; i < particlesArray.length; i++) {
                 particlesArray[i].update();
@@ -344,6 +342,7 @@ document.addEventListener("DOMContentLoaded", () => {
     widgetHeaders.forEach(header => {
         header.addEventListener('click', () => {
             const drawer = header.closest('.clickable-drawer');
+            if (!drawer) return;
             
             document.querySelectorAll('.clickable-drawer.expanded').forEach(openDrawer => {
                 if (openDrawer !== drawer) openDrawer.classList.remove('expanded');
@@ -356,7 +355,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ================= 6. INTERACTIVE MAP SELECTOR =================
     const mapElement = document.getElementById('demMap');
     
-    if (mapElement) {
+    if (mapElement && typeof L !== 'undefined') {
         const map = L.map('demMap').setView([20.5937, 78.9629], 5);
         
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -396,17 +395,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const bounds = layer.getBounds();
             
-            document.getElementById('minLon').value = bounds.getWest().toFixed(4);
-            document.getElementById('minLat').value = bounds.getSouth().toFixed(4);
-            document.getElementById('maxLon').value = bounds.getEast().toFixed(4);
-            document.getElementById('maxLat').value = bounds.getNorth().toFixed(4);
+            const minLonEl = document.getElementById('minLon');
+            const minLatEl = document.getElementById('minLat');
+            const maxLonEl = document.getElementById('maxLon');
+            const maxLatEl = document.getElementById('maxLat');
+
+            if (minLonEl) minLonEl.value = bounds.getWest().toFixed(4);
+            if (minLatEl) minLatEl.value = bounds.getSouth().toFixed(4);
+            if (maxLonEl) maxLonEl.value = bounds.getEast().toFixed(4);
+            if (maxLatEl) maxLatEl.value = bounds.getNorth().toFixed(4);
         });
 
-        const demDrawer = document.getElementById('demDownloadBtn').closest('.clickable-drawer');
-        if (demDrawer) {
-            demDrawer.addEventListener('click', () => {
-                setTimeout(() => { map.invalidateSize(); }, 400); 
-            });
+        const demDownloadBtnEl = document.getElementById('demDownloadBtn');
+        if (demDownloadBtnEl) {
+            const demDrawer = demDownloadBtnEl.closest('.clickable-drawer');
+            if (demDrawer) {
+                demDrawer.addEventListener('click', () => {
+                    setTimeout(() => { map.invalidateSize(); }, 400); 
+                });
+            }
         }
     }
 
@@ -428,12 +435,12 @@ document.addEventListener("DOMContentLoaded", () => {
             document.body.classList.toggle('light-mode');
             
             if (document.body.classList.contains('light-mode')) {
-                sunIcon.style.display = 'none';
-                moonIcon.style.display = 'block';
+                if (sunIcon) sunIcon.style.display = 'none';
+                if (moonIcon) moonIcon.style.display = 'block';
                 localStorage.setItem('theme', 'light');
             } else {
-                sunIcon.style.display = 'block';
-                moonIcon.style.display = 'none';
+                if (sunIcon) sunIcon.style.display = 'block';
+                if (moonIcon) moonIcon.style.display = 'none';
                 localStorage.setItem('theme', 'dark');
             }
             
@@ -456,11 +463,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const email = document.getElementById("contactEmail").value;
             const message = document.getElementById("contactMessage").value;
 
-            // 1. Trigger Envelope Flying Animation Overlay
-            envelopeOverlay.classList.add("active");
+            if (envelopeOverlay) envelopeOverlay.classList.add("active");
 
             try {
-                // 2. Call your deployed Flask backend endpoint
                 const response = await fetch('/api/send-email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -469,64 +474,67 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const result = await response.json();
 
-                // 3. Keep animation visible briefly, then transition to success screen
                 setTimeout(() => {
-                    envelopeOverlay.classList.remove("active");
+                    if (envelopeOverlay) envelopeOverlay.classList.remove("active");
                     
                     if (result.success) {
-                        successMessage.classList.add("active");
+                        if (successMessage) successMessage.classList.add("active");
                         contactForm.reset();
                     } else {
                         alert("Failed to send message: " + (result.message || "Unknown error"));
                     }
-                }, 2500); // 2.5 seconds matching the visual flow
+                }, 2500);
 
             } catch (err) {
                 console.error("Network or Server error:", err);
-                envelopeOverlay.classList.remove("active");
+                if (envelopeOverlay) envelopeOverlay.classList.remove("active");
                 alert("An error occurred while sending your message. Please check your network connection.");
             }
         });
     }
 });
 
-// Reset view to send another message (exposed globally for inline buttons if needed)
+// ================= GLOBAL HELPER FUNCTIONS =================
 function resetContactForm() {
     const successMessage = document.getElementById("successMessage");
     if (successMessage) {
         successMessage.classList.remove("active");
     }
 }
-// Copy UPI ID functionality
+
 function copyUpiId() {
-    const upiElement = document.getElementById('upiText').textContent;
-    navigator.clipboard.writeText(upiElement).then(() => {
+    const upiElement = document.getElementById('upiText');
+    if (!upiElement) return;
+    
+    navigator.clipboard.writeText(upiElement.textContent).then(() => {
         alert("UPI ID copied to clipboard!");
     }).catch(err => {
         console.error('Failed to copy: ', err);
     });
 }
 
-// Step 1: User clicks "I've Sent the Payment" -> Open Modal
 function confirmPayment() {
-    document.getElementById('donationModal').style.display = 'flex';
+    const modal = document.getElementById('donationModal');
+    if (modal) modal.style.display = 'flex';
 }
 
-// Step 2: If they click "Skip"
 function skipDonationDetails() {
-    document.getElementById('donationModal').style.display = 'none';
+    const modal = document.getElementById('donationModal');
+    if (modal) modal.style.display = 'none';
     triggerSuccessAnimation();
 }
 
-// Step 3: If they fill out name/email and submit
 async function submitDonationDetails(event) {
     event.preventDefault();
-    const name = document.getElementById('donorName').value || "Supporter";
-    const email = document.getElementById('donorEmail').value;
+    const nameEl = document.getElementById('donorName');
+    const emailEl = document.getElementById('donorEmail');
+    
+    const name = nameEl ? nameEl.value || "Supporter" : "Supporter";
+    const email = emailEl ? emailEl.value : "";
 
-    document.getElementById('donationModal').style.display = 'none';
+    const modal = document.getElementById('donationModal');
+    if (modal) modal.style.display = 'none';
 
-    // Send data to backend to trigger thank-you email via Zoho
     if (email) {
         try {
             await fetch('/api/log-donor', {
@@ -542,15 +550,14 @@ async function submitDonationDetails(event) {
     triggerSuccessAnimation();
 }
 
-// Step 4: Fire the green tick checkmark animation
 function triggerSuccessAnimation() {
     const btn = document.getElementById('paidBtn');
     const btnText = document.getElementById('btnText');
     const checkmarkAnim = document.getElementById('checkmarkAnim');
     const successNote = document.getElementById('successNote');
 
-    btnText.style.display = 'none';
-    checkmarkAnim.style.display = 'inline-block';
-    btn.classList.add('success-state');
-    successNote.style.display = 'block';
+    if (btnText) btnText.style.display = 'none';
+    if (checkmarkAnim) checkmarkAnim.style.display = 'inline-block';
+    if (btn) btn.classList.add('success-state');
+    if (successNote) successNote.style.display = 'block';
 }
