@@ -63,12 +63,20 @@ document.addEventListener("DOMContentLoaded", () => {
         endYearSelect.value = currentEnd;
     }
 
-    if (rainCheck && tminCheck && tmaxCheck) {
-        rainCheck.addEventListener("input", updateYearDropdowns);
-        tminCheck.addEventListener("input", updateYearDropdowns);
-        tmaxCheck.addEventListener("input", updateYearDropdowns);
-        updateYearDropdowns();
+    if (rainCheck) rainCheck.addEventListener("input", updateYearDropdowns);
+    if (tminCheck) tminCheck.addEventListener("input", updateYearDropdowns);
+    if (tmaxCheck) tmaxCheck.addEventListener("input", updateYearDropdowns);
+
+    // Dynamically refresh dropdown range the moment the user clicks or focuses on the year select fields
+    if (startYearSelect) {
+        startYearSelect.addEventListener("mousedown", updateYearDropdowns);
+        startYearSelect.addEventListener("focus", updateYearDropdowns);
     }
+    if (endYearSelect) {
+        endYearSelect.addEventListener("mousedown", updateYearDropdowns);
+        endYearSelect.addEventListener("focus", updateYearDropdowns);
+    }
+    updateYearDropdowns();
 
     if (downloadBtn) {
         downloadBtn.addEventListener("click", () => {
@@ -159,12 +167,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const maxLat = parseFloat(document.getElementById("maxLat").value);
 
             if (isNaN(minLon) || isNaN(minLat) || isNaN(maxLon) || isNaN(maxLat)) {
-                alert("Mission Aborted: Please enter valid numerical coordinates for all four Bounding Box fields.");
-                return;
-            }
-
-            if (minLon >= maxLon || minLat >= maxLat) {
-                alert("Mission Aborted: Minimum coordinates must be strictly less than Maximum coordinates.");
+                alert("Mission Aborted: Please enter valid numerical coordinates for all fields.");
                 return;
             }
 
@@ -218,6 +221,22 @@ document.addEventListener("DOMContentLoaded", () => {
             };
         });
     }
+
+    // ================= 3.1 SPATIAL EXTENT TYPE TOGGLE (POINT vs POLYGON/GEOJSON) =================
+    const spatialRadios = document.querySelectorAll('input[name="extentType"], input[type="radio"]');
+    const mapContainerWrapper = document.getElementById('demMap')?.closest('.study-area-container, .map-wrapper, div');
+
+    spatialRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+            if (mapContainerWrapper) {
+                mapContainerWrapper.style.display = 'block'; 
+            }
+            
+            if (window.demLeafletMap) {
+                setTimeout(() => { window.demLeafletMap.invalidateSize(); }, 300);
+            }
+        });
+    });
 
     // ================= 4. SPATIAL NETWORK ANIMATION =================
     const canvas = document.getElementById('spatial-network');
@@ -357,6 +376,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     if (mapElement && typeof L !== 'undefined') {
         const map = L.map('demMap').setView([20.5937, 78.9629], 5);
+        window.demLeafletMap = map;
         
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; OpenStreetMap &copy; CARTO',
@@ -369,11 +389,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const drawControl = new L.Control.Draw({
             draw: {
-                polygon: false,
                 polyline: false,
                 circle: false,
                 circlemarker: false,
-                marker: false,
+                marker: {
+                    shapeOptions: {
+                        color: '#06b6d4'
+                    }
+                },
+                polygon: {
+                    allowIntersection: false,
+                    showArea: true,
+                    shapeOptions: {
+                        color: '#06b6d4',
+                        weight: 2,
+                        fillOpacity: 0.2
+                    }
+                },
                 rectangle: {
                     shapeOptions: {
                         color: '#06b6d4', 
@@ -393,17 +425,24 @@ document.addEventListener("DOMContentLoaded", () => {
             const layer = e.layer;
             drawnItems.addLayer(layer);
 
-            const bounds = layer.getBounds();
-            
             const minLonEl = document.getElementById('minLon');
             const minLatEl = document.getElementById('minLat');
             const maxLonEl = document.getElementById('maxLon');
             const maxLatEl = document.getElementById('maxLat');
 
-            if (minLonEl) minLonEl.value = bounds.getWest().toFixed(4);
-            if (minLatEl) minLatEl.value = bounds.getSouth().toFixed(4);
-            if (maxLonEl) maxLonEl.value = bounds.getEast().toFixed(4);
-            if (maxLatEl) maxLatEl.value = bounds.getNorth().toFixed(4);
+            if (e.layerType === 'marker') {
+                const latlng = layer.getLatLng();
+                if (minLonEl) minLonEl.value = latlng.lng.toFixed(4);
+                if (minLatEl) minLatEl.value = latlng.lat.toFixed(4);
+                if (maxLonEl) maxLonEl.value = latlng.lng.toFixed(4);
+                if (maxLatEl) maxLatEl.value = latlng.lat.toFixed(4);
+            } else {
+                const bounds = layer.getBounds();
+                if (minLonEl) minLonEl.value = bounds.getWest().toFixed(4);
+                if (minLatEl) minLatEl.value = bounds.getSouth().toFixed(4);
+                if (maxLonEl) maxLonEl.value = bounds.getEast().toFixed(4);
+                if (maxLatEl) maxLatEl.value = bounds.getNorth().toFixed(4);
+            }
         });
 
         const demDownloadBtnEl = document.getElementById('demDownloadBtn');
