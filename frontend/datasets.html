@@ -3,149 +3,416 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Datasets | GIS Gateway</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=7.0">
+    <title>Datasets Directory | GIS Gateway</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css?v=18.0">
     <meta name="google-adsense-account" content="ca-pub-8841814950405003">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0b0f19;
+            font-family: 'Inter', sans-serif;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .directory-container {
+            max-width: 1200px;
+            margin: 110px auto 60px auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .directory-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .directory-header h1 {
+            font-size: 2.4rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .directory-header p {
+            color: #94a3b8;
+            font-size: 1rem;
+            max-width: 650px;
+            margin: 0 auto 24px auto;
+            line-height: 1.6;
+        }
+
+        /* Category Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 35px;
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+            padding: 8px 18px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.25);
+        }
+
+        /* Flashcard Grid */
+        .flashcard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+        }
+
+        .flashcard {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .flashcard::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #06b6d4);
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .flashcard:hover {
+            transform: translateY(-6px);
+            border-color: rgba(59, 130, 246, 0.45);
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45), 0 0 20px rgba(59, 130, 246, 0.15);
+        }
+
+        .flashcard:hover::before {
+            opacity: 1;
+        }
+
+        .card-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .portal-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: rgba(59, 130, 246, 0.12);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #60a5fa;
+            font-size: 1.2rem;
+        }
+
+        .card-badges {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .flash-badge {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(6, 182, 212, 0.12);
+            color: #22d3ee;
+            border: 1px solid rgba(6, 182, 212, 0.25);
+        }
+
+        .flashcard h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 0 0 6px 0;
+        }
+
+        .portal-domain {
+            font-size: 0.75rem;
+            color: #60a5fa;
+            font-family: monospace;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .flashcard p.card-desc {
+            font-size: 0.88rem;
+            color: #cbd5e1;
+            line-height: 1.55;
+            margin: 0 0 18px 0;
+        }
+
+        .specs-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 0.78rem;
+        }
+
+        .spec-item span.spec-label {
+            color: #64748b;
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .spec-item span.spec-val {
+            color: #f8fafc;
+            font-weight: 600;
+        }
+
+        .redirect-link-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 11px 16px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #2563eb, #0891b2);
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.88rem;
+            text-decoration: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .redirect-link-btn:hover {
+            opacity: 0.92;
+            transform: scale(1.01);
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Ambient Background Effects -->
     <div class="ambient-glow"></div>
     <div class="spatial-grid"></div>
+    <canvas id="spatial-network"></canvas>
 
     <!-- Floating Glass Navigation -->
-    <header class="glass-nav">
-        <div class="nav-container">
-            <a href="index.html" class="logo">
-                <img src="logo.jpeg" alt="GIS Gateway Logo" class="brand-logo">
-            </a>
-            <nav class="main-nav">
-                <a href="index.html" class="nav-link">Home</a>
-                <a href="datasets.html" class="nav-link active">Datasets</a>
-                <a href="contact.html" class="nav-link">Contact</a>
+    <header class="glass-nav" style="position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; height: 70px;">
+        <div class="nav-container" style="max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 100%; padding: 0 24px;">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="logoonly.png" alt="GIS Gateway Logo" class="brand-logo" style="height: 35px;">
+                </a>
+            </div>
+            <nav class="main-nav" style="display: flex; gap: 20px;">
+                <a href="index.html" class="nav-link" style="color: #cbd5e1; text-decoration: none; font-weight: 500;">Home</a>
+                <a href="datasets.html" class="nav-link active" style="color: #38bdf8; text-decoration: none; font-weight: 600;">Datasets</a>
+                <a href="contact.html" class="nav-link" style="color: #cbd5e1; text-decoration: none; font-weight: 500;">Contact</a>
             </nav>
             <div class="nav-actions">
-                <a href="donate.html" class="donate-btn">Donate <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></a>
+                <a href="donate.html" class="donate-btn" style="background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3); color: #60a5fa; padding: 8px 16px; border-radius: 999px; text-decoration: none; font-size: 0.85rem; font-weight: 600;">Donate ❤️</a>
             </div>
         </div>
-        
     </header>
 
-    <main class="dashboard page-fade-in" style="max-width: 1400px;">
-        <div class="hero-container" style="padding-bottom: 20px;">
-            <h2 class="uppercase-subheading">[ Zero-Code Extraction Portal ]</h2>
+    <!-- Main Flashcard Directory -->
+    <main class="directory-container">
+        <div class="directory-header">
+            <span class="hero-badge" style="background: rgba(59,130,246,0.1); color: #38bdf8; border: 1px solid rgba(59,130,246,0.3); padding: 4px 12px; border-radius: 999px; font-size: 0.75srem; font-weight: 600; margin-bottom: 12px; display: inline-block;">CURATED DATA DIRECTORY</span>
+            <h1>Spatial & Meteorological Portals</h1>
+            <p>Explore verified global and Indian remote sensing repositories. Select any flashcard below to view dataset specifications and jump directly to the official portal.</p>
+
+            <div class="filter-tabs">
+                <button class="filter-btn active" data-filter="all">All Portals</button>
+                <button class="filter-btn" data-filter="climate">Climate & Weather</button>
+                <button class="filter-btn" data-filter="elevation">Elevation / DEM</button>
+                <button class="filter-btn" data-filter="satellite">Satellite & GIS</button>
+            </div>
         </div>
 
-        <!-- The Grid Wrapper holding both side-by-side widgets -->
-        <div class="widget-grid-layout">
-            
-            <!-- ================= WIDGET 1: IMD DOWNLOADER ================= -->
-            <div class="glass-card widget-card clickable-drawer">
-                <div class="widget-header">
-                    <h2>IMD Gridded Data</h2>
-                </div>
-                
-                <!-- Everything inside here is hidden until hover -->
-                <div class="widget-expandable">
-                    <div class="widget-content">
-                        <div class="tags" style="margin-bottom: 15px;">
-                            <span class="tag">0.25° x 0.25°</span>
-                            <span class="tag">Daily</span>
-                            <span class="tag">NetCDF</span>
-                        </div>
-                        
-                        <p class="description">
-                            High Spatial Resolution Long Period Daily Gridded Rainfall and Temperature Data Set Over India. 
-                            Rainfall (1901-2025). Temperature (1951-2025).
-                        </p>
+        <div class="flashcard-grid" id="flashcardGrid">
 
-                        <div class="checkbox-group">
-                            <span class="group-label">Variables:</span>
-                            <label class="custom-checkbox"><input type="checkbox" id="var-rain" value="rain" checked><span class="checkmark"></span> Rainfall</label>
-                            <label class="custom-checkbox"><input type="checkbox" id="var-tmin" value="tmin" checked><span class="checkmark"></span> Min Temp</label>
-                            <label class="custom-checkbox"><input type="checkbox" id="var-tmax" value="tmax" checked><span class="checkmark"></span> Max Temp</label>
+            <!-- CARD 1: IMD Pune Gridded Data (Redirects to exact user link) -->
+            <div class="flashcard" data-category="climate">
+                <div>
+                    <div class="card-top-bar">
+                        <div class="portal-icon"><i class="fa-solid fa-cloud-showers-heavy"></i></div>
+                        <div class="card-badges">
+                            <span class="flash-badge">0.25° Resolution</span>
+                            <span class="flash-badge">NetCDF Bin</span>
                         </div>
-
-                        <div class="controls-container">
-                            <div class="input-group">
-                                <label for="startYear">Start Year</label>
-                                <select id="startYear"></select>
-                            </div>
-                            <div class="input-group">
-                                <label for="endYear">End Year</label>
-                                <select id="endYear"></select>
-                            </div>
-                            <button id="downloadBtn" class="glow-btn"><span>Extract Data</span></button>
+                    </div>
+                    <h3>IMD Gridded Climate Archive</h3>
+                    <span class="portal-domain">imdpune.gov.in</span>
+                    <p class="card-desc">Official India Meteorological Department long-period daily gridded rainfall and temperature archive binaries over the Indian subcontinent.</p>
+                    <div class="specs-box">
+                        <div class="spec-item">
+                            <span class="spec-label">Temporal</span>
+                            <span class="spec-val">Daily Gridded</span>
                         </div>
-
-                        <div id="progressSection" class="progress-section hidden">
-                            <div class="progress-header"><span id="statusText">Initializing...</span><span id="percentageText">0%</span></div>
-                            <div class="progress-bar-bg"><div id="progressBar" class="progress-bar-fill"></div></div>
-                        </div>
-
-                        <div class="citation-box">
-                            <p class="citation-title">Citation Requirement</p>
-                            <p>Nandi, S., Patel, P., & Swain, S. (2024). <a href="https://doi.org/10.1016/j.envsoft.2023.105869" target="_blank">IMDLIB: An open-source library...</a> <em>Environmental Modelling & Software</em>, 171, 105869.</p>
+                        <div class="spec-item">
+                            <span class="spec-label">Parameters</span>
+                            <span class="spec-val">Rainfall & Temp</span>
                         </div>
                     </div>
                 </div>
+                <a href="https://imdpune.gov.in/cmpg/Griddata/Rainfall_25_Bin.html" target="_blank" rel="noopener noreferrer" class="redirect-link-btn">
+                    <span>Visit IMD Gridded Portal</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
             </div>
 
-            <!-- ================= WIDGET 2: COPERNICUS DEM ================= -->
-            <div class="glass-card widget-card clickable-drawer">
-                <div class="widget-header">
-                    <h2>Copernicus Global DEM</h2>
-                </div>
-                
-                <!-- Everything inside here is hidden until hover -->
-                <div class="widget-expandable">
-                    <div class="widget-content">
-                        <div class="tags" style="margin-bottom: 15px;">
-                            <span class="tag">30m Resolution</span>
-                            <span class="tag">GeoTIFF</span>
-                            <span class="tag">Zero-Key API</span>
+            <!-- CARD 2: Copernicus DEM -->
+            <div class="flashcard" data-category="elevation">
+                <div>
+                    <div class="card-top-bar">
+                        <div class="portal-icon"><i class="fa-solid fa-mountain-sun"></i></div>
+                        <div class="card-badges">
+                            <span class="flash-badge">30m GLO-30</span>
+                            <span class="flash-badge">GeoTIFF</span>
                         </div>
-                        
-                        <p class="description">
-                            High-precision 30-meter Digital Elevation Model (DEM) data retrieved dynamically via Microsoft Planetary Computer STAC catalog services.
-                        </p>
-
-                        <span class="group-label" style="display: block; margin-bottom: 10px;">Define Bounding Box (Decimal Degrees):</span>
-                        <div class="coordinate-input-grid">
-                            <div class="input-group">
-                                <label for="minLon">Min Longitude (W)</label>
-                                <input type="number" id="minLon" placeholder="e.g. 77.0" class="dark-input" step="any">
-                            </div>
-                            <div class="input-group">
-                                <label for="minLat">Min Latitude (S)</label>
-                                <input type="number" id="minLat" placeholder="e.g. 10.2" class="dark-input" step="any">
-                            </div>
-                            <div class="input-group">
-                                <label for="maxLon">Max Longitude (E)</label>
-                                <input type="number" id="maxLon" placeholder="e.g. 78.0" class="dark-input" step="any">
-                            </div>
-                            <div class="input-group">
-                                <label for="maxLat">Max Latitude (N)</label>
-                                <input type="number" id="maxLat" placeholder="e.g. 11.0" class="dark-input" step="any">
-                            </div>
+                    </div>
+                    <h3>Copernicus Global DEM</h3>
+                    <span class="portal-domain">portal.opentopography.org</span>
+                    <p class="card-desc">High-precision 30-meter Digital Surface Model (DSM) ideal for hydrological modeling, slope analysis, and watershed mapping.</p>
+                    <div class="specs-box">
+                        <div class="spec-item">
+                            <span class="spec-label">Resolution</span>
+                            <span class="spec-val">30 Meters</span>
                         </div>
-
-                        <div class="controls-container" style="justify-content: flex-end; margin-top: 14px;">
-                            <button id="demDownloadBtn" class="glow-btn"><span>Extract DEM Tiles</span></button>
-                        </div>
-
-                        <div id="demProgressSection" class="progress-section hidden">
-                            <div class="progress-header"><span id="demStatusText">Searching...</span><span id="demPercentageText">0%</span></div>
-                            <div class="progress-bar-bg"><div id="demProgressBar" class="progress-bar-fill"></div></div>
+                        <div class="spec-item">
+                            <span class="spec-label">Access</span>
+                            <span class="spec-val">Open Access</span>
                         </div>
                     </div>
                 </div>
+                <a href="https://portal.opentopography.org/raster?opentopoID=OTSDEM.032021.4326.3" target="_blank" rel="noopener noreferrer" class="redirect-link-btn">
+                    <span>Visit OpenTopography</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+            </div>
+
+            <!-- CARD 3: ISRO MOSDAC -->
+            <div class="flashcard" data-category="climate satellite">
+                <div>
+                    <div class="card-top-bar">
+                        <div class="portal-icon"><i class="fa-solid fa-satellite"></i></div>
+                        <div class="card-badges">
+                            <span class="flash-badge">INSAT / Oceansat</span>
+                            <span class="flash-badge">HDF5 / NetCDF</span>
+                        </div>
+                    </div>
+                    <h3>ISRO MOSDAC</h3>
+                    <span class="portal-domain">mosdac.gov.in</span>
+                    <p class="card-desc">Meteorological & Oceanographic Satellite Data Archival Centre by Space Applications Centre (ISRO) for weather satellite products.</p>
+                    <div class="specs-box">
+                        <div class="spec-item">
+                            <span class="spec-label">Coverage</span>
+                            <span class="spec-val">India & Ocean</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Products</span>
+                            <span class="spec-val">Hourly Satellite</span>
+                        </div>
+                    </div>
+                </div>
+                <a href="https://www.mosdac.gov.in/" target="_blank" rel="noopener noreferrer" class="redirect-link-btn">
+                    <span>Visit MOSDAC Portal</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+            </div>
+
+            <!-- CARD 4: ISRO Bhuvan -->
+            <div class="flashcard" data-category="satellite elevation">
+                <div>
+                    <div class="card-top-bar">
+                        <div class="portal-icon"><i class="fa-solid fa-earth-asia"></i></div>
+                        <div class="card-badges">
+                            <span class="flash-badge">CartoDEM / LISS</span>
+                            <span class="flash-badge">Vector / Raster</span>
+                        </div>
+                    </div>
+                    <h3>ISRO Bhuvan Nidhi</h3>
+                    <span class="portal-domain">bhuvan.nrsc.gov.in</span>
+                    <p class="card-desc">NRSC's national geo-portal providing Indian remote sensing satellite imagery, LULC maps, and thematic thematic data layers.</p>
+                    <div class="specs-box">
+                        <div class="spec-item">
+                            <span class="spec-label">Resolution</span>
+                            <span class="spec-val">2.5m to 56m</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Agency</span>
+                            <span class="spec-val">NRSC / ISRO</span>
+                        </div>
+                    </div>
+                </div>
+                <a href="https://bhuvan-app3.nrsc.gov.in/data/download/index.php" target="_blank" rel="noopener noreferrer" class="redirect-link-btn">
+                    <span>Visit Bhuvan Open Data</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
             </div>
 
         </div>
     </main>
 
-    <script src="script.js?v=7.0"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const flashcards = document.querySelectorAll('.flashcard');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    const filterValue = btn.getAttribute('data-filter');
+
+                    flashcards.forEach(card => {
+                        const categories = card.getAttribute('data-category');
+                        if (filterValue === 'all' || categories.includes(filterValue)) {
+                            card.style.display = 'flex';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 </body>
 </html>

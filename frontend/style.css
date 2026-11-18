@@ -181,6 +181,20 @@ body { background-color: var(--bg-dark); color: var(--text-main); line-height: 1
 .controls-container { display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap;}
 .checkbox-group { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
 
+.imd-option-shell { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 18px; align-items: start; }
+.imd-sidebar { background: rgba(15, 23, 42, 0.45); border: 1px solid var(--border-glass); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.imd-step { padding: 10px 12px; border-radius: 10px; font-size: 0.77rem; color: var(--text-muted); letter-spacing: 0.04em; text-transform: uppercase; border: 1px solid transparent; background: rgba(255,255,255,0.02); }
+.imd-step.active { background: rgba(6, 182, 212, 0.12); border-color: rgba(6, 182, 212, 0.35); color: #f8fafc; }
+.imd-main { display: flex; flex-direction: column; gap: 18px; }
+.imd-form-section { background: rgba(15, 23, 42, 0.35); border: 1px solid var(--border-glass); border-radius: 12px; padding: 14px 16px; }
+.imd-form-header { font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px; }
+.imd-choice-grid { display: flex; gap: 12px; flex-wrap: wrap; }
+.imd-choice { display: inline-flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; background: rgba(255,255,255,0.02); border: 1px solid transparent; color: #dbeafe; font-size: 0.9rem; cursor: pointer; }
+.imd-choice input { display: none; }
+.imd-radio { width: 15px; height: 15px; border-radius: 50%; border: 1px solid var(--border-glass); background: rgba(15,23,42,0.8); display: inline-block; position: relative; }
+.imd-choice input:checked + .imd-radio { border-color: var(--primary); }
+.imd-choice input:checked + .imd-radio::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--primary); }
+
 .input-group { display: flex; flex-direction: column; flex: 1; }
 .input-group label, .group-label { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; }
 select, .dark-input { background: rgba(15, 23, 42, 0.8); color: white; border: 1px solid var(--border-glass); padding: 12px 16px; border-radius: 8px; font-size: 1rem; outline: none; transition: all 0.3s; }
@@ -196,6 +210,12 @@ select:focus, .dark-input:focus { border-color: var(--primary); box-shadow: 0 0 
 .checkmark { width: 18px; height: 18px; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-glass); border-radius: 4px; display: flex; justify-content: center; align-items: center; transition: all 0.2s; }
 .custom-checkbox input:checked ~ .checkmark { background: var(--primary); border-color: var(--primary); }
 .custom-checkbox input:checked ~ .checkmark::after { content: "✔"; color: white; font-size: 12px; }
+
+@media (max-width: 900px) {
+    .imd-option-shell { grid-template-columns: 1fr; }
+    .imd-sidebar { flex-direction: row; flex-wrap: wrap; }
+    .imd-step { flex: 1 1 calc(50% - 10px); }
+}
 
 /* ================= PROGRESS BAR ================= */
 .hidden { display: none !important; }
@@ -721,4 +741,247 @@ body.light-mode .clickable-drawer.expanded {
 .primary-btn:hover {
     background: #0891b2;
     color: white;
+}
+
+/* ================= LEAFLET MAP VISIBILITY & SIZING FIXES ================= */
+#imdMap, #demMap {
+    height: 280px !important;
+    min-height: 280px !important;
+    width: 100% !important;
+    display: block !important;
+    position: relative !important;
+    z-index: 1;
+}
+
+.widget-content {
+    overflow: visible !important;
+}
+
+/* ================= IMDWEB TRUE SPLIT-SCREEN LAYOUT ================= */
+.imd-portal-container {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    gap: 20px;
+    width: 100%;
+    max-width: 100% !important;
+    height: calc(100vh - 140px);
+    min-height: 680px;
+    margin-top: 10px;
+}
+
+.imd-control-sidebar {
+    background: var(--bg-card);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border-glass);
+    border-radius: 16px;
+    padding: 24px;
+    overflow-y: auto;
+    height: 100%;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.imd-map-container-full {
+    background: var(--bg-card);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border-glass);
+    border-radius: 16px;
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+#imdMap {
+    width: 100% !important;
+    height: 100% !important;
+    position: absolute !important;
+    inset: 0 !important;
+    border-radius: 16px;
+    z-index: 1;
+}
+
+@media (max-width: 1100px) {
+    .imd-portal-container {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+    .imd-map-container-full {
+        height: 500px;
+    }
+}
+/* ================= DATASET SELECTOR CARDS & POP-UP TRANSITIONS ================= */
+.dataset-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 30px;
+    max-width: 700px;
+    margin: 30px auto;
+    text-align: center;
+}
+
+.dataset-selector-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-glass);
+    border-radius: 16px;
+    padding: 35px 25px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    position: relative;
+    overflow: hidden;
+}
+
+.dataset-selector-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.dataset-selector-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: var(--primary);
+    box-shadow: 0 20px 40px rgba(6, 182, 212, 0.25);
+}
+
+.dataset-selector-card:hover::before {
+    opacity: 1;
+}
+
+.dataset-icon-box {
+    width: 75px;
+    height: 75px;
+    border-radius: 16px;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(6, 182, 212, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--primary);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.dataset-selector-card:hover .dataset-icon-box {
+    transform: scale(1.05);
+    border-color: var(--primary);
+}
+
+.dataset-card-title {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-main);
+    letter-spacing: 0.3px;
+}
+
+/* Smooth Pop-up Workspace Panels */
+.workspace-panel {
+    display: none;
+    opacity: 0;
+    transform: scale(0.96) translateY(25px);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.workspace-panel.active {
+    display: block;
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+
+.back-to-grid-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-glass);
+    color: var(--text-muted);
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    backdrop-filter: blur(10px);
+}
+
+.back-to-grid-btn:hover {
+    background: var(--primary);
+    color: #0f172a;
+    border-color: var(--primary);
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+}
+/* ================= FIXED IMDWEB LAYOUT & SPACING ================= */
+.dashboard {
+    padding-top: 110px !important; /* Leaves clean clearance below the fixed glass nav bar */
+    padding-bottom: 40px;
+    max-width: 1450px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.imd-portal-container {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    gap: 30px;
+    width: 100%;
+    height: calc(100vh - 150px);
+    min-height: 620px;
+    align-items: center; /* Centers the sidebar and map vertically on screen */
+    margin: 0 auto;
+}
+
+.imd-control-sidebar {
+    background: var(--bg-card);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border-glass);
+    border-radius: 16px;
+    padding: 24px;
+    overflow-y: auto;
+    height: 100%;
+    max-height: calc(100vh - 160px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.imd-map-container-full {
+    background: var(--bg-card);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border-glass);
+    border-radius: 16px;
+    position: relative;
+    height: 100%;
+    max-height: calc(100vh - 160px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+#imdMap {
+    width: 100% !important;
+    height: 100% !important;
+    position: absolute !important;
+    inset: 0 !important;
+    border-radius: 16px;
+    z-index: 1;
+}
+
+@media (max-width: 1100px) {
+    .imd-portal-container {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+    .imd-map-container-full {
+        height: 500px;
+    }
 }

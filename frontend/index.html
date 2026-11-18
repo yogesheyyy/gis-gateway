@@ -4,20 +4,213 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GIS Gateway | Spatial Intelligence</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Leaflet CSS & JS for Interactive Map -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
-
-    <!-- Version 11.0 forces the browser to drop the cache! -->
-    <link rel="stylesheet" href="style.css?v=11.0">
+    <!-- Version 21.0 forces the browser to drop the cache -->
+    <link rel="stylesheet" href="style.css?v=21.0">
     <meta name="google-adsense-account" content="ca-pub-8841814950405003">
+
+    <style>
+        /* Category Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 24px auto 10px auto;
+            max-width: 900px;
+            padding: 0 20px;
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            color: #cbd5e1;
+            padding: 8px 18px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: inherit;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: linear-gradient(135deg, #0284c7, #06b6d4);
+            border-color: #22d3ee;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.35);
+        }
+
+        /* Flashcard UI Styling */
+        .flashcard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+            gap: 26px;
+            max-width: 1180px;
+            margin: 30px auto 60px auto;
+            padding: 0 20px;
+            text-align: left;
+        }
+
+        .flashcard {
+            background: rgba(15, 23, 42, 0.78);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.22);
+            border-radius: 18px;
+            padding: 26px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+        }
+
+        .flashcard::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #06b6d4);
+        }
+
+        .flashcard:hover {
+            transform: translateY(-7px);
+            border-color: rgba(6, 182, 212, 0.6);
+            box-shadow: 0 16px 35px rgba(0, 0, 0, 0.45), 0 0 22px rgba(6, 182, 212, 0.2);
+        }
+
+        .flashcard-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            gap: 10px;
+        }
+
+        .flashcard-icon {
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
+            border-radius: 12px;
+            background: rgba(6, 182, 212, 0.12);
+            border: 1px solid rgba(6, 182, 212, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #06b6d4;
+            font-size: 1.35rem;
+        }
+
+        .flashcard-badge {
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 999px;
+            background: rgba(6, 182, 212, 0.14);
+            color: #22d3ee;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            white-space: nowrap;
+        }
+
+        .flashcard-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 0 0 4px 0;
+        }
+
+        .flashcard-domain {
+            font-size: 0.78rem;
+            color: #38bdf8;
+            font-family: monospace;
+            display: block;
+            margin-bottom: 14px;
+            word-break: break-all;
+        }
+
+        .flashcard-desc {
+            font-size: 0.88rem;
+            color: #cbd5e1;
+            line-height: 1.6;
+            margin: 0 0 20px 0;
+        }
+
+        .flashcard-specs {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 22px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .spec-label {
+            color: #64748b;
+            display: block;
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .spec-value {
+            color: #f8fafc;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .flashcard-action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #0284c7, #06b6d4);
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.88rem;
+            box-sizing: border-box;
+        }
+
+        /* Light Mode Compatibility */
+        body.light-mode .flashcard {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(15, 23, 42, 0.12);
+        }
+        body.light-mode .flashcard-title,
+        body.light-mode .spec-value {
+            color: #0f172a;
+        }
+        body.light-mode .flashcard-desc {
+            color: #334155;
+        }
+        body.light-mode .flashcard-specs {
+            background: rgba(15, 23, 42, 0.04);
+            border-color: rgba(15, 23, 42, 0.08);
+        }
+        body.light-mode .filter-btn {
+            color: #334155;
+            background: rgba(15, 23, 42, 0.05);
+            border-color: rgba(15, 23, 42, 0.15);
+        }
+        body.light-mode .filter-btn.active {
+            color: #fff;
+        }
+    </style>
 </head>
 <body>
 
@@ -33,25 +226,23 @@
                 <img src="logoonly.png" alt="GIS Gateway Logo" class="brand-logo">
             </div>
             <nav class="main-nav">
-                <a href="#" data-target="home" class="nav-link active">Home</a>
-                <a href="#" data-target="datasets" class="nav-link">Datasets</a>
-                <a href="#" data-target="contact" class="nav-link">Contact</a>
+                <a href="#home" class="nav-link active" data-target="home">Home</a>
+                <a href="#datasets" class="nav-link" data-target="datasets">Datasets</a>
+                <a href="#contact" class="nav-link" data-target="contact">Contact</a>
             </nav>
             <div class="nav-actions" style="display: flex; align-items: center; gap: 15px;">
                 
                 <!-- Theme Toggle Button -->
                 <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
-                    <!-- Sun Icon (Default: Dark Mode is active) -->
                     <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                     </svg>
-                    <!-- Moon Icon (Hidden initially, shows in Light Mode) -->
                     <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                     </svg>
                 </button>
 
-                <a href="#" data-target="donate" class="donate-btn route-btn">Donate <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></a>
+                <a href="#donate" data-target="donate" class="donate-btn route-btn">Donate <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></a>
             </div>
         </div>
     </header>
@@ -63,9 +254,9 @@
             <div class="hero-container">
                 <span class="hero-badge">GIS DATA PORTAL</span>
                 <h1 class="hero-title">Built For <br><span class="text-gradient">Spatial Discovery</span></h1>
-                <p class="hero-subtitle">Map, analyze, and inspire with high-resolution meteorological extraction and automated NetCDF processing pipelines.</p>
+                <p class="hero-subtitle">Map, analyze, and inspire with high-resolution meteorological repositories and curated open-access geospatial data portals.</p>
                 <button class="glow-btn route-btn" data-target="datasets">
-                    Get Started Today
+                    Explore Datasets
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                 </button>
             </div>
@@ -73,214 +264,408 @@
                 <div class="glass-card">
                     <div class="card-icon"><i class="fa-solid fa-globe"></i></div>
                     <h3>High-Resolution Data</h3>
-                    <p>Access daily gridded datasets optimized for research and advanced geoinformatics.</p>
+                    <p>Access daily gridded datasets, satellite scenes, and elevation models optimized for geoinformatics research.</p>
                 </div>
                 <div class="glass-card">
                     <div class="card-icon"><i class="fa-solid fa-network-wired"></i></div>
-                    <h3>NetCDF Pipeline</h3>
-                    <p>Automated extraction, dimension formatting, and seamless zlib compression.</p>
+                    <h3>Verified Repositories</h3>
+                    <p>Direct one-click access to official meteorological and remote sensing archives without middleware bottlenecks.</p>
                 </div>
                 <div class="glass-card">
                     <div class="card-icon"><i class="fa-solid fa-file-code"></i></div>
-                    <h3>Open Source</h3>
-                    <p>Built for the research community, completely free, accessible, and transparent.</p>
+                    <h3>Open Access</h3>
+                    <p>Built for the scientific and academic community—completely free, accessible, and transparent.</p>
                 </div>
             </div>
         </section>
 
-        <!-- ================= DATASETS PAGE ================= -->
+        <!-- ================= DATASETS PAGE (10 OPEN-ACCESS FLASHCARDS) ================= -->
         <section id="datasets" class="page-section">
-            <div class="widget-grid-layout">
+            <div class="hero-container" style="padding-bottom: 10px;">
+                <span class="hero-badge">SPATIAL MODULES</span>
+                <h2 class="hero-title" style="font-size: 2.5rem;">Open-Access Dataset Directory</h2>
+                <p class="hero-subtitle">Filter by category below and click any flashcard to launch its official open-access download repository.</p>
                 
-                <!-- 1. IMD WIDGET (Enhanced with IMDWEB & Citation Support) -->
-                <div class="glass-card widget-card clickable-drawer">
-                    <div class="widget-header">
-                        <h2>IMD Gridded Data Downloader & Analysis</h2>
-                    </div>
-                    <div class="widget-expandable">
-                        <div class="widget-content">
-                            <div class="tags" style="margin-bottom: 15px;">
-                                <span class="tag">0.25° x 0.25°</span>
-                                <span class="tag">Daily</span>
-                                <span class="tag">NetCDF / CSV</span>
-                            </div>
-                            <p class="description">
-                                High Spatial Resolution Long Period Daily Gridded Rainfall and Temperature Data Set Over India. 
-                                Rainfall (1901-2025). Temperature (1951-2025).
-                            </p>
-
-                            <!-- Step 1: Mode Selection -->
-                            <div class="form-group" style="margin-bottom: 15px;">
-                                <label class="group-label"><strong>Step 1: Select Mode</strong></label><br>
-                                <div style="display: flex; gap: 15px; margin-top: 5px;">
-                                    <label><input type="radio" name="imd_mode" value="download" checked onclick="toggleImdMode('download')"> Download NetCDF</label>
-                                    <label><input type="radio" name="imd_mode" value="analysis" onclick="toggleImdMode('analysis')"> Analysis & Indices</label>
-                                </div>
-                            </div>
-
-                            <!-- Step 2: Variable Selection -->
-                            <div class="form-group" style="margin-bottom: 15px;">
-                                <label class="group-label"><strong>Step 2: Select Variable</strong></label>
-                                <div class="checkbox-group" style="margin-top: 5px;">
-                                    <label class="custom-checkbox"><input type="radio" name="imd_var" value="rain" checked><span class="checkmark"></span> Rainfall</label>
-                                    <label class="custom-checkbox"><input type="radio" name="imd_var" value="tmin"><span class="checkmark"></span> Min Temp</label>
-                                    <label class="custom-checkbox"><input type="radio" name="imd_var" value="tmax"><span class="checkmark"></span> Max Temp</label>
-                                </div>
-                                <div style="margin-top: 5px;">
-                                    <label style="font-size: 13px;"><input type="checkbox" id="imd_realtime"> Real-time Data</label>
-                                </div>
-                            </div>
-
-                            <!-- Date Range -->
-                            <div class="form-group" style="margin-bottom: 15px;">
-                                <label class="group-label"><strong>Date / Year Range</strong></label>
-                                <div class="coordinate-input-grid" style="margin-top: 5px;">
-                                    <div class="input-group">
-                                        <label for="startYear">Start Year</label>
-                                        <select id="startYear" class="dark-input"></select>
-                                    </div>
-                                    <div class="input-group">
-                                        <label for="endYear">End Year</label>
-                                        <select id="endYear" class="dark-input"></select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Step 3: Spatial Extent Type -->
-                            <div class="form-group" style="margin-bottom: 15px;">
-                                <label class="group-label"><strong>Step 3: Select Spatial Extent Type</strong></label>
-                                <div style="display: flex; gap: 15px; margin-top: 5px; margin-bottom: 10px;">
-                                    <label><input type="radio" name="imdSpatialType" value="point" checked onclick="setImdSpatialMode('point')"> Point</label>
-                                    <label><input type="radio" name="imdSpatialType" value="polygon" onclick="setImdSpatialMode('polygon')"> Polygon / GeoJSON</label>
-                                </div>
-                                
-                                <div id="imdPointInputs" class="coordinate-input-grid">
-                                    <div class="input-group">
-                                        <label for="imdLat">Latitude</label>
-                                        <input type="number" id="imdLat" placeholder="e.g. 13.08" class="dark-input" step="any" value="13.08">
-                                    </div>
-                                    <div class="input-group">
-                                        <label for="imdLon">Longitude</label>
-                                        <input type="number" id="imdLon" placeholder="e.g. 80.27" class="dark-input" step="any" value="80.27">
-                                    </div>
-                                </div>
-
-                                <div id="imdDropZone" class="drop-zone" style="display: none; border: 2px dashed var(--border-glass); padding: 15px; text-align: center; margin-top: 8px; border-radius: 4px;">
-                                    <p style="font-size: 12px; margin: 0;">Drag and Drop GeoJSON File here (max 5 MB)</p>
-                                    <input type="file" id="imdGeojsonFile" accept=".geojson,.json" style="display:none;">
-                                </div>
-
-                                <!-- Leaflet Map Container for Study Area / District Boundary -->
-                                <div id="imdMapContainer" style="display: none; margin-top: 10px;">
-                                    <label style="display: block; font-size: 12px; margin-bottom: 5px; color: #ccc;">Study Area / District Boundary Map:</label>
-                                    <div id="imdMap" style="height: 250px; width: 100%; border-radius: 8px; border: 1px solid var(--border-glass); z-index: 1;"></div>
-                                </div>
-                            </div>
-
-                            <!-- ANALYSIS SPECIFIC OPTIONS (Hidden by default) -->
-                            <div id="imdAnalysisOptions" style="display: none; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass); padding: 12px; border-radius: 6px; margin-bottom: 15px;">
-                                <div class="form-group" style="margin-bottom: 10px;">
-                                    <label style="font-size: 13px;"><strong>Aggregation Method</strong></label><br>
-                                    <div style="display: flex; gap: 10px; margin-top: 5px;">
-                                        <label style="font-size: 13px;"><input type="radio" name="imd_agg" value="mean" checked> Mean</label>
-                                        <label style="font-size: 13px;"><input type="radio" name="imd_agg" value="max"> Max</label>
-                                        <label style="font-size: 13px;"><input type="radio" name="imd_agg" value="min"> Min</label>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label style="font-size: 13px;"><strong>Climate Indices (Yearly Basis)</strong></label>
-                                    <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 5px;">
-                                        <label style="font-size: 12px;"><input type="checkbox" name="imd_index" value="rainy_days"> Rainy days (drc)</label>
-                                        <label style="font-size: 12px;"><input type="checkbox" name="imd_index" value="heavy_precip"> Heavy precipitation days (d64)</label>
-                                        <label style="font-size: 12px;"><input type="checkbox" name="imd_index" value="consec_wet"> Consecutive wet days (cwd)</label>
-                                        <label style="font-size: 12px;"><input type="checkbox" name="imd_index" value="sdi"> Simple daily intensity index (sdii)</label>
-                                        <label style="font-size: 12px;"><input type="checkbox" name="imd_index" value="max_rain"> Maximum 1 day rainfall (rx1day)</label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="controls-container">
-                                <button id="downloadBtn" class="glow-btn" style="width: 100%;"><span>Extract Data</span></button>
-                            </div>
-
-                            <div id="progressSection" class="progress-section hidden" style="margin-top: 15px;">
-                                <div class="progress-header"><span id="statusText">Initializing...</span><span id="percentageText">0%</span></div>
-                                <div class="progress-bar-bg"><div id="progressBar" class="progress-bar-fill"></div></div>
-                            </div>
-
-                            <!-- Citation Notice Footer -->
-                            <div class="citation-footer" style="background: rgba(0, 123, 255, 0.05); padding: 12px 15px; border-radius: 8px; border-left: 4px solid var(--accent-primary, #007bff); margin-top: 20px; font-size: 12px; color: inherit; line-height: 1.4;">
-                                <p style="margin: 0 0 4px 0;"><strong>Citation Notice:</strong></p>
-                                <p style="margin: 0 0 4px 0;">If you use IMDWEB or GIS Gateway gridded modules in your research, please cite:</p>
-                                <p style="margin: 0; font-style: italic;">
-                                    Nandi, S., Patel, P., & Swain, S. (2024). IMDWEB: An open source library for retrieval, processing and spatiotemporal exploratory assessments of gridded meteorological observation datasets over India. <em>Environmental Modelling & Software</em>, 171, 105898. 
-                                    <a href="https://doi.org/10.1016/j.envsoft.2023.105869" target="_blank" style="color: var(--accent-primary, #007bff); text-decoration: none;">https://doi.org/10.1016/j.envsoft.2023.105869</a>
-                                </p>
-                            </div>
-
-                        </div>
-                    </div>
+                <!-- Interactive Category Filters -->
+                <div class="filter-tabs">
+                    <button class="filter-btn active" onclick="filterFlashcards('all', this)">All Portals (10)</button>
+                    <button class="filter-btn" onclick="filterFlashcards('climate', this)">Climate & Rainfall</button>
+                    <button class="filter-btn" onclick="filterFlashcards('satellite', this)">Satellite & EO</button>
+                    <button class="filter-btn" onclick="filterFlashcards('elevation', this)">DEM & Hydrology</button>
                 </div>
-
-               <!-- 2. COPERNICUS DEM WIDGET -->
-                <div class="glass-card widget-card clickable-drawer">
-                    <div class="widget-header">
-                        <h2>Copernicus Global DEM Extractor</h2>
-                    </div>
-                    <div class="widget-expandable">
-                        <div class="widget-content">
-                            <div class="tags" style="margin-bottom: 15px;">
-                                <span class="tag">30m Resolution</span>
-                                <span class="tag">GeoTIFF</span>
-                                <span class="tag">Zero-Key API</span>
+            </div>
+            
+            <div class="flashcard-grid">
+                
+                <!-- 1. IMD Gridded Data -->
+                <a href="https://imdpune.gov.in/cmpg/Griddata/Rainfall_25_Bin.html" target="_blank" rel="noopener noreferrer" class="flashcard" data-category="climate">
+                    <div>
+                        <div class="flashcard-top">
+                            <div class="flashcard-icon"><i class="fa-solid fa-cloud-showers-heavy"></i></div>
+                            <span class="flashcard-badge">0.25° × 0.25° Binary / NetCDF</span>
+                        </div>
+                        <h3 class="flashcard-title">IMD Gridded Data</h3>
+                        <span class="flashcard-domain">imdpune.gov.in/cmpg/Griddata/Rainfall_25_Bin.html</span>
+                        <p class="flashcard-desc">
+                            Official India Meteorological Department (IMD Pune) high-spatial-resolution daily gridded rainfall (1901–present) and temperature (1951–present) binary and NetCDF archives over India.
+                        </p>
+                        <div class="flashcard-specs">
+                            <div>
+                                <span class="spec-label">Temporal Range</span>
+                                <span class="spec-value">Daily (1901–Present)</span>
                             </div>
-                            <p class="description">
-                                High-precision 30-meter Digital Elevation Model (DEM) data retrieved dynamically via Microsoft Planetary Computer. No API keys required.
-                            </p>
-
-                            <!-- DATA CITATION & ATTRIBUTION NOTICE -->
-                            <div style="font-size: 0.75rem; color: #999; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass); border-radius: 6px; padding: 8px 12px; margin-bottom: 20px; line-height: 1.4;">
-                                <strong style="color: #bbb;">Data Source & Attribution:</strong><br>
-                                Copernicus Global DEM (GLO-30) via Microsoft Planetary Computer.<br>
-                                <span style="font-size: 0.7rem; color: #777;">&copy; DLR e.V. 2010-2014 and &copy; Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA.</span>
+                            <div>
+                                <span class="spec-label">Parameters</span>
+                                <span class="spec-value">Rainfall, Tmin, Tmax</span>
                             </div>
-
-                            <span class="group-label" style="display: block; margin-bottom: 10px;">1. Draw Region on Map OR Enter Coordinates:</span>
-                            
-                            <!-- THE INTERACTIVE MAP -->
-                            <div id="demMap" style="height: 300px; width: 100%; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--border-glass); z-index: 1;"></div>
-                            
-                            <div class="coordinate-input-grid">
-                                <div class="input-group">
-                                    <label for="minLon">Min Longitude (W)</label>
-                                    <input type="number" id="minLon" placeholder="e.g. 77.0" class="dark-input" step="any">
-                                </div>
-                                <div class="input-group">
-                                    <label for="minLat">Min Latitude (S)</label>
-                                    <input type="number" id="minLat" placeholder="e.g. 10.2" class="dark-input" step="any">
-                                </div>
-                                <div class="input-group">
-                                    <label for="maxLon">Max Longitude (E)</label>
-                                    <input type="number" id="maxLon" placeholder="e.g. 78.0" class="dark-input" step="any">
-                                </div>
-                                <div class="input-group">
-                                    <label for="maxLat">Max Latitude (N)</label>
-                                    <input type="number" id="maxLat" placeholder="e.g. 11.0" class="dark-input" step="any">
-                                </div>
+                            <div>
+                                <span class="spec-label">Spatial Resolution</span>
+                                <span class="spec-value">0.25° & 1.0° Grid</span>
                             </div>
-
-                            <div class="controls-container" style="justify-content: flex-end; margin-top: 10px;">
-                                <button id="demDownloadBtn" class="glow-btn"><span>Extract DEM Tiles</span></button>
-                            </div>
-
-                            <div id="demProgressSection" class="progress-section hidden">
-                                <div class="progress-header"><span id="demStatusText">Searching Catalog...</span><span id="demPercentageText">0%</span></div>
-                                <div class="progress-bar-bg"><div id="demProgressBar" class="progress-bar-fill"></div></div>
+                            <div>
+                                <span class="spec-label">Source Agency</span>
+                                <span class="spec-value">IMD Pune (CRS)</span>
                             </div>
                         </div>
                     </div>
-                </div>
+                    <div class="flashcard-action">
+                        <span>Visit IMD Pune Portal</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </div>
+                </a>
+
+                <!-- 2. Copernicus Global DEM -->
+                <a href="https://portal.opentopography.org/raster?opentopoID=OTSDEM.032021.4326.3" target="_blank" rel="noopener noreferrer" class="flashcard" data-category="elevation">
+                    <div>
+                        <div class="flashcard-top">
+                            <div class="flashcard-icon"><i class="fa-solid fa-mountain"></i></div>
+                            <span class="flashcard-badge">30m GLO-30 GeoTIFF</span>
+                        </div>
+                        <h3 class="flashcard-title">Copernicus Global DEM</h3>
+                        <span class="flashcard-domain">portal.opentopography.org</span>
+                        <p class="flashcard-desc">
+                            High-precision 30-meter Digital Surface Model (DSM) derived from the TanDEM-X radar mission for terrain relief, slope, and hydrological modeling without login requirements.
+                        </p>
+                        <div class="flashcard-specs">
+                            <div>
+                                <span class="spec-label">Spatial Resolution</span>
+                                <span class="spec-value">30 Meters (1 arc-sec)</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">File Format</span>
+                                <span class="spec-value">GeoTIFF Raster</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Coverage</span>
+                                <span class="spec-value">Global Surface</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Provider</span>
+                                <span class="spec-value">ESA / OpenTopography</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flashcard-action">
+                        <span>Visit OpenTopography Portal</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </div>
+                </a>
+
+                <!-- 3. ISRO Bhoonidhi EO Data Hub -->
+                <a href="https://bhoonidhi.nrsc.gov.in/" target="_blank" rel="noopener noreferrer" class="flashcard" data-category="satellite elevation">
+                    <div>
+                        <div class="flashcard-top">
+                            <div class="flashcard-icon"><i class="fa-solid fa-satellite"></i></div>
+                            <span class="flashcard-badge">5m+ Open IRS / SAR</span>
+                        </div>
+                        <h3 class="flashcard-title">ISRO Bhoonidhi EO Hub</h3>
+                        <span class="flashcard-domain">bhoonidhi.nrsc.gov.in</span>
+                        <p class="flashcard-desc">
+                            NRSC/ISRO Earth Observation data hub offering free open access to Indian Remote Sensing (Resourcesat LISS-III/IV, EOS-04 SAR, Oceansat, CartoDEM) and NISAR S-SAR collections.
+                        </p>
+                        <div class="flashcard-specs">
+                            <div>
+                                <span class="spec-label">Spatial Resolution</span>
+                                <span class="spec-value">5m to 56m (Open Policy)</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">File Format</span>
+                                <span class="spec-value">GeoTIFF / HDF5</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Archive Span</span>
+                                <span class="spec-value">1986–Present</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Source Agency</span>
+                                <span class="spec-value">NRSC / ISRO</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flashcard-action">
+                        <span>Visit ISRO Bhoonidhi</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </div>
+                </a>
+
+                <!-- 4. ISRO MOSDAC -->
+                <a href="https://www.mosdac.gov.in/" target="_blank" rel="noopener noreferrer" class="flashcard" data-category="climate satellite">
+                    <div>
+                        <div class="flashcard-top">
+                            <div class="flashcard-icon"><i class="fa-solid fa-hurricane"></i></div>
+                            <span class="flashcard-badge">INSAT-3DR / 3DS HDF5</span>
+                        </div>
+                        <h3 class="flashcard-title">ISRO MOSDAC Archive</h3>
+                        <span class="flashcard-domain">mosdac.gov.in</span>
+                        <p class="flashcard-desc">
+                            Meteorological & Oceanographic Satellite Data Archival Centre by Space Applications Centre (ISRO) for half-hourly INSAT cloud imagery, Hydro-Estimator rainfall, and ocean products.
+                        </p>
+                        <div class="flashcard-specs">
+                            <div>
+                                <span class="spec-label">Temporal Range</span>
+                                <span class="spec-value">15/30-Min & Daily</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Parameters</span>
+                                <span class="spec-value">Rainfall, OLR, SST, Winds</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Coverage</span>
+                                <span class="spec-value">India & Indian Ocean</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Source Agency</span>
+                                <span class="spec-value">SAC / ISRO</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flashcard-action">
+                        <span>Visit MOSDAC Portal</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </div>
+                </a>
+
+                <!-- 5. ECMWF ERA5 Climate Data Store -->
+                <a href="https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels?tab=overview" target="_blank" rel="noopener noreferrer" class="flashcard" data-category="climate">
+                    <div>
+                        <div class="flashcard-top">
+                            <div class="flashcard-icon"><i class="fa-solid fa-temperature-half"></i></div>
+                            <span class="flashcard-badge">0.25° Hourly NetCDF / GRIB</span>
+                        </div>
+                        <h3 class="flashcard-title">ECMWF ERA5 Reanalysis</h3>
+                        <span class="flashcard-domain">cds.climate.copernicus.eu</span>
+                        <p class="flashcard-desc">
+                            Fifth-generation ECMWF global atmospheric, land-surface, and wave reanalysis providing hourly single-level and pressure-level climate variables from 1940 to the present.
+                        </p>
+                        <div class="flashcard-specs">
+                            <div>
+                                <span class="spec-label">Temporal Range</span>
+                                <span class="spec-value">Hourly (1940–Present)</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Spatial Resolution</span>
+                                <span class="spec-value">0.25° × 0.25° (~31 km)</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Parameters</span>
+                                <span class="spec-value">2m Temp, Wind, CAPE, Rad</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Access Method</span>
+                                <span class="spec-value">Web UI & Python cdsapi</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flashcard-action">
+                        <span>Visit Copernicus CDS</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </div>
+                </a>
+
+                <!-- 6. CHIRPS Direct HTTP Repository -->
+                <a href="https://data.chc.ucsb.edu/products/CHIRPS-2.0/" target="_blank" rel="noopener noreferrer" class="flashcard" data-category="climate">
+                    <div>
+                        <div class="flashcard-top">
+                            <div class="flashcard-icon"><i class="fa-solid fa-droplet"></i></div>
+                            <span class="flashcard-badge">0.05° (~5.5 km) GeoTIFF / NC</span>
+                        </div>
+                        <h3 class="flashcard-title">CHIRPS Global Rainfall</h3>
+                        <span class="flashcard-domain">data.chc.ucsb.edu/products/CHIRPS-2.0</span>
+                        <p class="flashcard-desc">
+                            Climate Hazards Center InfraRed Precipitation with Station data (UCSB). Direct HTTP directory download (no login required) for high-resolution daily and monthly rainfall grids.
+                        </p>
+                        <div class="flashcard-specs">
+                            <div>
+                                <span class="spec-label">Temporal Range</span>
+                                <span class="spec-value">Daily / Monthly (1981+)</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Spatial Resolution</span>
+                                <span class="spec-value">0.05° × 0.05° Quasi-Global</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">File Format</span>
+                                <span class="spec-value">GeoTIFF & NetCDF</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Provider</span>
+                                <span class="spec-value">UCSB CHC / USGS</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flashcard-action">
+                        <span>Open Direct HTTP Directory</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </div>
+                </a>
+
+                <!-- 7. Copernicus Data Space Browser -->
+                <a href="https://browser.dataspace.copernicus.eu/" target="_blank" rel="noopener noreferrer" class="flashcard" data-category="satellite climate">
+                    <div>
+                        <div class="flashcard-top">
+                            <div class="flashcard-icon"><i class="fa-solid fa-earth-americas"></i></div>
+                            <span class="flashcard-badge">Sentinel 1 / 2 / 3 / 5P</span>
+                        </div>
+                        <h3 class="flashcard-title">Copernicus Data Space</h3>
+                        <span class="flashcard-domain">browser.dataspace.copernicus.eu</span>
+                        <p class="flashcard-desc">
+                            European Space Agency's interactive browser for instant visualization and raw product download of Sentinel-1 SAR, Sentinel-2 10m optical, and Sentinel-5P atmospheric trace gases.
+                        </p>
+                        <div class="flashcard-specs">
+                            <div>
+                                <span class="spec-label">Spatial Resolution</span>
+                                <span class="spec-value">10m (S2) to 3.5km (S5P)</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Sensors</span>
+                                <span class="spec-value">SAR, MSI, OLCI, TROPOMI</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">File Format</span>
+                                <span class="spec-value">SAFE / NetCDF / GeoTIFF</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Provider</span>
+                                <span class="spec-value">ESA / EU Copernicus</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flashcard-action">
+                        <span>Launch Copernicus Browser</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </div>
+                </a>
+
+                <!-- 8. NASA GES DISC & Giovanni -->
+                <a href="https://disc.gsfc.nasa.gov/" target="_blank" rel="noopener noreferrer" class="flashcard" data-category="climate satellite">
+                    <div>
+                        <div class="flashcard-top">
+                            <div class="flashcard-icon"><i class="fa-solid fa-wind"></i></div>
+                            <span class="flashcard-badge">0.1° GPM IMERG & MERRA-2</span>
+                        </div>
+                        <h3 class="flashcard-title">NASA GES DISC Archive</h3>
+                        <span class="flashcard-domain">disc.gsfc.nasa.gov</span>
+                        <p class="flashcard-desc">
+                            Goddard Earth Sciences Data and Information Services Center hosting GPM IMERG half-hourly precipitation, MERRA-2 aerosol/radiation reanalysis, and OMI atmospheric products.
+                        </p>
+                        <div class="flashcard-specs">
+                            <div>
+                                <span class="spec-label">Temporal Range</span>
+                                <span class="spec-value">30-Min / Hourly / Monthly</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Key Collections</span>
+                                <span class="spec-value">GPM IMERG, MERRA-2, AIRS</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">File Format</span>
+                                <span class="spec-value">NetCDF4 / HDF5</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Source Agency</span>
+                                <span class="spec-value">NASA Goddard (Earthdata)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flashcard-action">
+                        <span>Visit NASA GES DISC</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </div>
+                </a>
+
+                <!-- 9. USGS EarthExplorer -->
+                <a href="https://earthexplorer.usgs.gov/" target="_blank" rel="noopener noreferrer" class="flashcard" data-category="satellite elevation">
+                    <div>
+                        <div class="flashcard-top">
+                            <div class="flashcard-icon"><i class="fa-solid fa-layer-group"></i></div>
+                            <span class="flashcard-badge">30m Landsat 1–9 & SRTM</span>
+                        </div>
+                        <h3 class="flashcard-title">USGS EarthExplorer</h3>
+                        <span class="flashcard-domain">earthexplorer.usgs.gov</span>
+                        <p class="flashcard-desc">
+                            Comprehensive global catalog of multi-decadal Landsat (1–9) Level-2 Surface Reflectance imagery, SRTM 30m digital elevation tiles, and hyperspectral earth observation data.
+                        </p>
+                        <div class="flashcard-specs">
+                            <div>
+                                <span class="spec-label">Spatial Resolution</span>
+                                <span class="spec-value">15m Pan / 30m Multispectral</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Archive Span</span>
+                                <span class="spec-value">1972–Present (Landsat)</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">File Format</span>
+                                <span class="spec-value">Cloud-Optimized GeoTIFF</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Source Agency</span>
+                                <span class="spec-value">USGS EROS Center</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flashcard-action">
+                        <span>Visit USGS EarthExplorer</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </div>
+                </a>
+
+                <!-- 10. HydroSHEDS & HydroBASINS -->
+                <a href="https://www.hydrosheds.org/hydrosheds-core-downloads" target="_blank" rel="noopener noreferrer" class="flashcard" data-category="elevation">
+                    <div>
+                        <div class="flashcard-top">
+                            <div class="flashcard-icon"><i class="fa-solid fa-water"></i></div>
+                            <span class="flashcard-badge">3s–30s Shapefile & GeoTIFF</span>
+                        </div>
+                        <h3 class="flashcard-title">HydroSHEDS & HydroBASINS</h3>
+                        <span class="flashcard-domain">hydrosheds.org/hydrosheds-core-downloads</span>
+                        <p class="flashcard-desc">
+                            Direct open downloads (no registration required) for global hydrologically conditioned DEMs, flow direction/accumulation grids, watershed polygons (HydroBASINS), and river networks.
+                        </p>
+                        <div class="flashcard-specs">
+                            <div>
+                                <span class="spec-label">Spatial Resolution</span>
+                                <span class="spec-value">3 arc-sec (~90m) to 30s</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Key Layers</span>
+                                <span class="spec-value">HydroBASINS, HydroRIVERS</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">File Format</span>
+                                <span class="spec-value">Shapefile, GDB, GeoTIFF</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Access Type</span>
+                                <span class="spec-value">Direct One-Click Download</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flashcard-action">
+                        <span>Download HydroSHEDS Data</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </div>
+                </a>
 
             </div>
         </section>
@@ -289,7 +674,7 @@
         <section id="contact" class="page-section">
             <div class="glass-card widget-card" style="text-align: center; max-width: 600px; margin: 0 auto;">
                 <h2>Contact Us</h2>
-                <p class="description" style="border: none; background: transparent; padding: 0; margin-bottom: 20px;">Have a question about the datasets? Drop us a line.</p>
+                <p class="description" style="border: none; background: transparent; padding: 0; margin-bottom: 20px;">Have a question or want to suggest an open-access geospatial portal? Drop us a message.</p>
                 <form id="contactForm" class="contact-form">
                     <div style="margin-bottom: 15px;">
                         <input type="text" id="contactName" required placeholder="Your Name" class="dark-input" style="width: 100%;">
@@ -309,7 +694,7 @@
         <section id="donate" class="page-section">
             <div class="donate-container">
                 <h1 style="font-size: 2.5rem; margin-bottom: 10px;">Support the Project</h1>
-                <p class="hero-subtitle" style="margin-bottom: 30px;">Keep the spatial data pipeline running and open-source.</p>
+                <p class="hero-subtitle" style="margin-bottom: 30px;">Keep the spatial data portal running and open-source.</p>
                 
                 <div class="donation-card">
                     <div class="qr-badge">Scan & Pay via GPay / UPI</div>
@@ -340,33 +725,11 @@
         </section>
     </main>
 
-    <!-- Envelope Animation Overlay -->
-    <div id="envelopeOverlay" class="envelope-overlay">
-        <div class="envelope-wrapper">
-            <div class="envelope">
-                <div class="mail-body"></div>
-                <div class="envelope-flap"></div>
-                <div class="envelope-pocket"></div>
-            </div>
-            <p class="anim-text">Sending your message...</p>
-        </div>
-    </div>
-
-    <!-- Success Message Screen -->
-    <div id="successMessage" class="success-screen">
-        <div class="success-content">
-            <div class="success-icon">✓</div>
-            <h3>Message Sent Successfully!</h3>
-            <p>Thanks for reaching out. We'll get back to you soon.</p>
-            <button onclick="resetContactForm()">Send Another Message</button>
-        </div>
-    </div>
-
     <!-- Donation Details Modal -->
     <div id="donationModal" class="modal-overlay" style="display: none;">
         <div class="modal-content">
             <h3>Thank You for Supporting!</h3>
-            <p>Optional: Enter your details so we can send you a personalized thank-you note.</p>
+            <p>Optional: Enter your details so we can thank you.</p>
             <form onsubmit="submitDonationDetails(event)">
                 <input type="text" id="donorName" placeholder="Your Name" class="modal-input">
                 <input type="email" id="donorEmail" placeholder="Your Email Address" class="modal-input">
@@ -378,70 +741,7 @@
         </div>
     </div>
 
-    <!-- UI Helper Script for IMDWEB mode switches and map/dropdown initialization -->
-    <script>
-        function toggleImdMode(mode) {
-            const analysisDiv = document.getElementById('imdAnalysisOptions');
-            const actionBtn = document.getElementById('downloadBtn');
-            const btnSpan = actionBtn.querySelector('span');
-            if (mode === 'analysis') {
-                analysisDiv.style.display = 'block';
-                btnSpan.innerText = 'Extract & Download CSV Report';
-            } else {
-                analysisDiv.style.display = 'none';
-                btnSpan.innerText = 'Extract Data';
-            }
-        }
-
-        let imdMap = null;
-        function setImdSpatialMode(type) {
-            const pointInputs = document.getElementById('imdPointInputs');
-            const dropZone = document.getElementById('imdDropZone');
-            const mapContainer = document.getElementById('imdMapContainer');
-            if (type === 'polygon') {
-                pointInputs.style.display = 'none';
-                dropZone.style.display = 'block';
-                if (mapContainer) mapContainer.style.display = 'block';
-
-                // Initialize Leaflet Map for District / Study Area
-                if (!imdMap) {
-                    imdMap = L.map('imdMap').setView([13.08, 80.27], 7);
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '&copy; OpenStreetMap contributors'
-                    }).addTo(imdMap);
-                } else {
-                    imdMap.invalidateSize();
-                }
-            } else {
-                pointInputs.style.display = 'grid';
-                dropZone.style.display = 'none';
-                if (mapContainer) mapContainer.style.display = 'none';
-            }
-        }
-
-        // Populate Year Dropdowns on Load
-        document.addEventListener('DOMContentLoaded', () => {
-            const startYearSelect = document.getElementById('startYear');
-            const endYearSelect = document.getElementById('endYear');
-            if (startYearSelect && endYearSelect && startYearSelect.children.length === 0) {
-                for (let yr = 2026; yr >= 1901; yr--) {
-                    let opt1 = document.createElement('option');
-                    opt1.value = yr;
-                    opt1.textContent = yr;
-                    if (yr === 2000) opt1.selected = true;
-                    startYearSelect.appendChild(opt1);
-
-                    let opt2 = document.createElement('option');
-                    opt2.value = yr;
-                    opt2.textContent = yr;
-                    if (yr === 2025) opt2.selected = true;
-                    endYearSelect.appendChild(opt2);
-                }
-            }
-        });
-    </script>
-
-    <!-- Version 11.0 forces the browser to drop the cache! -->
-    <script src="script.js?v=11.0"></script>
+    <!-- Version 21.0 forces the browser to drop the cache -->
+    <script src="script.js?v=21.0"></script>
 </body>
 </html>
