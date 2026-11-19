@@ -232,3 +232,19 @@ function triggerSuccessAnimation() {
     if (btn) btn.classList.add('success-state');
     if (successNote) successNote.style.display = 'block';
 }
+
+function filterTutorials() {
+    const inputEl = document.getElementById('tutorialSearchInput');
+    const query = (inputEl ? inputEl.value : '').trim().toLowerCase();
+    const cards = document.querySelectorAll('.tutorial-card');
+
+    cards.forEach(card => {
+        const textContent = (card.textContent || '').toLowerCase();
+        const searchMeta = (card.getAttribute('data-search') || '').toLowerCase();
+        if (!query || textContent.includes(query) || searchMeta.includes(query)) {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}

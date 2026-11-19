@@ -9,8 +9,8 @@
     <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Version 21.0 forces the browser to drop the cache -->
-    <link rel="stylesheet" href="style.css?v=21.0">
+    <!-- Version 22.0 forces the browser to drop the cache -->
+    <link rel="stylesheet" href="style.css?v=22.0">
     <meta name="google-adsense-account" content="ca-pub-8841814950405003">
 
     <style>
@@ -44,6 +44,79 @@
             border-color: #22d3ee;
             color: #fff;
             box-shadow: 0 0 15px rgba(6, 182, 212, 0.35);
+        }
+
+        /* Tutorial Search Bar */
+        .tutorial-search-wrap {
+            max-width: 620px;
+            margin: 22px auto 10px auto;
+            padding: 0 20px;
+            position: relative;
+        }
+
+        .tutorial-search-input {
+            width: 100%;
+            padding: 13px 18px 13px 44px;
+            border-radius: 999px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            background: rgba(15, 23, 42, 0.82);
+            color: #fff;
+            font-size: 0.92rem;
+            font-family: inherit;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .tutorial-search-input:focus {
+            border-color: #22d3ee;
+            box-shadow: 0 0 18px rgba(6, 182, 212, 0.25);
+        }
+
+        .tutorial-search-icon {
+            position: absolute;
+            left: 36px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #38bdf8;
+            font-size: 0.95rem;
+        }
+
+        .playlist-banner {
+            max-width: 1180px;
+            margin: 24px auto 0 auto;
+            padding: 18px 24px;
+            border-radius: 16px;
+            background: rgba(15, 23, 42, 0.78);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .playlist-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .playlist-pill-btn {
+            background: rgba(6, 182, 212, 0.12);
+            border: 1px solid rgba(6, 182, 212, 0.35);
+            color: #67e8f9;
+            padding: 7px 14px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .playlist-pill-btn:hover {
+            background: linear-gradient(135deg, #0284c7, #06b6d4);
+            color: #fff;
         }
 
         /* Flashcard UI Styling */
@@ -186,8 +259,18 @@
             box-sizing: border-box;
         }
 
+        .video-embed-frame {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border: none;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            background: #020617;
+        }
+
         /* Light Mode Compatibility */
-        body.light-mode .flashcard {
+        body.light-mode .flashcard,
+        body.light-mode .playlist-banner {
             background: rgba(255, 255, 255, 0.9);
             border-color: rgba(15, 23, 42, 0.12);
         }
@@ -210,6 +293,10 @@
         body.light-mode .filter-btn.active {
             color: #fff;
         }
+        body.light-mode .tutorial-search-input {
+            background: rgba(255, 255, 255, 0.92);
+            color: #0f172a;
+        }
     </style>
 </head>
 <body>
@@ -228,6 +315,9 @@
             <nav class="main-nav">
                 <a href="#home" class="nav-link active" data-target="home">Home</a>
                 <a href="#datasets" class="nav-link" data-target="datasets">Datasets</a>
+                <a href="#software" class="nav-link" data-target="software">Software</a>
+                <a href="#tutorials" class="nav-link" data-target="tutorials">Tutorials</a>
+                <a href="#qa" class="nav-link" data-target="qa">Q &amp; A</a>
                 <a href="#contact" class="nav-link" data-target="contact">Contact</a>
             </nav>
             <div class="nav-actions" style="display: flex; align-items: center; gap: 15px;">
@@ -254,7 +344,7 @@
             <div class="hero-container">
                 <span class="hero-badge">GIS DATA PORTAL</span>
                 <h1 class="hero-title">Built For <br><span class="text-gradient">Spatial Discovery</span></h1>
-                <p class="hero-subtitle">Map, analyze, and inspire with high-resolution meteorological repositories and curated open-access geospatial data portals.</p>
+                <p class="hero-subtitle">Map, analyze, and inspire with high-resolution meteorological repositories, direct open-source software installers, and video tutorials.</p>
                 <button class="glow-btn route-btn" data-target="datasets">
                     Explore Datasets
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
@@ -267,31 +357,30 @@
                     <p>Access daily gridded datasets, satellite scenes, and elevation models optimized for geoinformatics research.</p>
                 </div>
                 <div class="glass-card">
-                    <div class="card-icon"><i class="fa-solid fa-network-wired"></i></div>
-                    <h3>Verified Repositories</h3>
-                    <p>Direct one-click access to official meteorological and remote sensing archives without middleware bottlenecks.</p>
+                    <div class="card-icon"><i class="fa-solid fa-download"></i></div>
+                    <h3>Direct Software Links</h3>
+                    <p>One-click access to official installers for QGIS, GRASS GIS, ESA SNAP, RStudio, Python, Orfeo ToolBox, and Geo Libre.</p>
                 </div>
                 <div class="glass-card">
-                    <div class="card-icon"><i class="fa-solid fa-file-code"></i></div>
-                    <h3>Open Access</h3>
-                    <p>Built for the scientific and academic community—completely free, accessible, and transparent.</p>
+                    <div class="card-icon"><i class="fa-brands fa-youtube"></i></div>
+                    <h3>Video Tutorials &amp; Q&amp;A</h3>
+                    <p>Search linked YouTube walkthroughs, browse the curated playlist, and review common geoinformatics answers.</p>
                 </div>
             </div>
         </section>
 
-        <!-- ================= DATASETS PAGE (10 OPEN-ACCESS FLASHCARDS) ================= -->
+        <!-- ================= DATASETS PAGE ================= -->
         <section id="datasets" class="page-section">
             <div class="hero-container" style="padding-bottom: 10px;">
                 <span class="hero-badge">SPATIAL MODULES</span>
                 <h2 class="hero-title" style="font-size: 2.5rem;">Open-Access Dataset Directory</h2>
                 <p class="hero-subtitle">Filter by category below and click any flashcard to launch its official open-access download repository.</p>
                 
-                <!-- Interactive Category Filters -->
                 <div class="filter-tabs">
                     <button class="filter-btn active" onclick="filterFlashcards('all', this)">All Portals (10)</button>
-                    <button class="filter-btn" onclick="filterFlashcards('climate', this)">Climate & Rainfall</button>
-                    <button class="filter-btn" onclick="filterFlashcards('satellite', this)">Satellite & EO</button>
-                    <button class="filter-btn" onclick="filterFlashcards('elevation', this)">DEM & Hydrology</button>
+                    <button class="filter-btn" onclick="filterFlashcards('climate', this)">Climate &amp; Rainfall</button>
+                    <button class="filter-btn" onclick="filterFlashcards('satellite', this)">Satellite &amp; EO</button>
+                    <button class="filter-btn" onclick="filterFlashcards('elevation', this)">DEM &amp; Hydrology</button>
                 </div>
             </div>
             
@@ -320,7 +409,7 @@
                             </div>
                             <div>
                                 <span class="spec-label">Spatial Resolution</span>
-                                <span class="spec-value">0.25° & 1.0° Grid</span>
+                                <span class="spec-value">0.25° &amp; 1.0° Grid</span>
                             </div>
                             <div>
                                 <span class="spec-label">Source Agency</span>
@@ -418,12 +507,12 @@
                         <h3 class="flashcard-title">ISRO MOSDAC Archive</h3>
                         <span class="flashcard-domain">mosdac.gov.in</span>
                         <p class="flashcard-desc">
-                            Meteorological & Oceanographic Satellite Data Archival Centre by Space Applications Centre (ISRO) for half-hourly INSAT cloud imagery, Hydro-Estimator rainfall, and ocean products.
+                            Meteorological &amp; Oceanographic Satellite Data Archival Centre by Space Applications Centre (ISRO) for half-hourly INSAT cloud imagery, Hydro-Estimator rainfall, and ocean products.
                         </p>
                         <div class="flashcard-specs">
                             <div>
                                 <span class="spec-label">Temporal Range</span>
-                                <span class="spec-value">15/30-Min & Daily</span>
+                                <span class="spec-value">15/30-Min &amp; Daily</span>
                             </div>
                             <div>
                                 <span class="spec-label">Parameters</span>
@@ -431,7 +520,7 @@
                             </div>
                             <div>
                                 <span class="spec-label">Coverage</span>
-                                <span class="spec-value">India & Indian Ocean</span>
+                                <span class="spec-value">India &amp; Indian Ocean</span>
                             </div>
                             <div>
                                 <span class="spec-label">Source Agency</span>
@@ -472,7 +561,7 @@
                             </div>
                             <div>
                                 <span class="spec-label">Access Method</span>
-                                <span class="spec-value">Web UI & Python cdsapi</span>
+                                <span class="spec-value">Web UI &amp; Python cdsapi</span>
                             </div>
                         </div>
                     </div>
@@ -505,7 +594,7 @@
                             </div>
                             <div>
                                 <span class="spec-label">File Format</span>
-                                <span class="spec-value">GeoTIFF & NetCDF</span>
+                                <span class="spec-value">GeoTIFF &amp; NetCDF</span>
                             </div>
                             <div>
                                 <span class="spec-label">Provider</span>
@@ -561,7 +650,7 @@
                     <div>
                         <div class="flashcard-top">
                             <div class="flashcard-icon"><i class="fa-solid fa-wind"></i></div>
-                            <span class="flashcard-badge">0.1° GPM IMERG & MERRA-2</span>
+                            <span class="flashcard-badge">0.1° GPM IMERG &amp; MERRA-2</span>
                         </div>
                         <h3 class="flashcard-title">NASA GES DISC Archive</h3>
                         <span class="flashcard-domain">disc.gsfc.nasa.gov</span>
@@ -598,7 +687,7 @@
                     <div>
                         <div class="flashcard-top">
                             <div class="flashcard-icon"><i class="fa-solid fa-layer-group"></i></div>
-                            <span class="flashcard-badge">30m Landsat 1–9 & SRTM</span>
+                            <span class="flashcard-badge">30m Landsat 1–9 &amp; SRTM</span>
                         </div>
                         <h3 class="flashcard-title">USGS EarthExplorer</h3>
                         <span class="flashcard-domain">earthexplorer.usgs.gov</span>
@@ -635,9 +724,9 @@
                     <div>
                         <div class="flashcard-top">
                             <div class="flashcard-icon"><i class="fa-solid fa-water"></i></div>
-                            <span class="flashcard-badge">3s–30s Shapefile & GeoTIFF</span>
+                            <span class="flashcard-badge">3s–30s Shapefile &amp; GeoTIFF</span>
                         </div>
-                        <h3 class="flashcard-title">HydroSHEDS & HydroBASINS</h3>
+                        <h3 class="flashcard-title">HydroSHEDS &amp; HydroBASINS</h3>
                         <span class="flashcard-domain">hydrosheds.org/hydrosheds-core-downloads</span>
                         <p class="flashcard-desc">
                             Direct open downloads (no registration required) for global hydrologically conditioned DEMs, flow direction/accumulation grids, watershed polygons (HydroBASINS), and river networks.
@@ -670,11 +759,416 @@
             </div>
         </section>
 
+        <!-- ================= SOFTWARE PAGE ================= -->
+        <section id="software" class="page-section">
+            <div class="hero-container" style="padding-bottom: 10px;">
+                <span class="hero-badge">DIRECT INSTALLERS</span>
+                <h2 class="hero-title" style="font-size: 2.5rem;">Geospatial &amp; Scientific Software</h2>
+                <p class="hero-subtitle">Direct official installer links for desktop GIS, radar/EO processing, statistical geocomputation, and Python environments.</p>
+            </div>
+
+            <div class="flashcard-grid">
+
+                <!-- 1. QGIS -->
+                <a href="https://download.qgis.org/downloads/QGIS-OSGeo4W-3.44.15-2.msi" target="_blank" rel="noopener noreferrer" class="flashcard">
+                    <div>
+                        <div class="flashcard-top">
+                            <div class="flashcard-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+                            <span class="flashcard-badge">Windows MSI (3.44.15-2)</span>
+                        </div>
+                        <h3 class="flashcard-title">QGIS (OSGeo4W)</h3>
+                        <span class="flashcard-domain">download.qgis.org/downloads/QGIS-OSGeo4W-3.44.15-2.msi</span>
+                        <p class="flashcard-desc">
+                            Direct Windows MSI installer for QGIS OSGeo4W with GDAL/OGR, GRASS/SAGA processing providers, vector/raster editing, and cartographic layout tools.
+                        </p>
+                        <div class="flashcard-specs">
+                            <div>
+                                <span class="spec-label">Package Type</span>
+                                <span class="spec-value">Windows .msi Installer</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Build</span>
+                                <span class="spec-value">OSGeo4W 3.44.15-2</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flashcard-action">
+                        <span>Download QGIS Installer</span>
+                        <i class="fa-solid fa-download"></i>
+                    </div>
+                </a>
+
+                <!-- 2. GRASS GIS -->
+                <a href="https://grass.osgeo.org/grass84/binary/mswindows/native/WinGRASS-8.4.2-1-Setup.exe" target="_blank" rel="noopener noreferrer" class="flashcard">
+                    <div>
+                        <div class="flashcard-top">
+                            <div class="flashcard-icon"><i class="fa-solid fa-seedling"></i></div>
+                            <span class="flashcard-badge">WinGRASS 8.4.2-1 (.exe)</span>
+                        </div>
+                        <h3 class="flashcard-title">GRASS GIS</h3>
+                        <span class="flashcard-domain">grass.osgeo.org/grass84/binary/mswindows/native/WinGRASS-8.4.2-1-Setup.exe</span>
+                        <p class="flashcard-desc">
+                            Direct native Windows installer for GRASS GIS 8.4, featuring powerful raster/voxel modeling, watershed &amp; flow routing, and time-series spatial analysis.
+                        </p>
+                        <div class="flashcard-specs">
+                            <div>
+                                <span class="spec-label">Package Type</span>
+                                <span class="spec-value">Windows .exe Setup</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Version</span>
+                                <span class="spec-value">WinGRASS 8.4.2-1</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flashcard-action">
+                        <span>Download GRASS GIS</span>
+                        <i class="fa-solid fa-download"></i>
+                    </div>
+                </a>
+
+                <!-- 3. ESA SNAP -->
+                <a href="https://download.esa.int/step/snap/14.0/installers/esa-snap_all_windows-14.0.0.exe" target="_blank" rel="noopener noreferrer" class="flashcard">
+                    <div>
+                        <div class="flashcard-top">
+                            <div class="flashcard-icon"><i class="fa-solid fa-satellite-dish"></i></div>
+                            <span class="flashcard-badge">SNAP 14.0.0 Windows</span>
+                        </div>
+                        <h3 class="flashcard-title">ESA SNAP Toolbox</h3>
+                        <span class="flashcard-domain">download.esa.int/step/snap/14.0/installers/esa-snap_all_windows-14.0.0.exe</span>
+                        <p class="flashcard-desc">
+                            Direct Windows installer for the European Space Agency Sentinel Application Platform (v14.0.0) for Sentinel-1 SAR, Sentinel-2 optical, and Sentinel-3 processing.
+                        </p>
+                        <div class="flashcard-specs">
+                            <div>
+                                <span class="spec-label">Package Type</span>
+                                <span class="spec-value">Windows .exe Installer</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Version</span>
+                                <span class="spec-value">ESA SNAP 14.0.0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flashcard-action">
+                        <span>Download ESA SNAP</span>
+                        <i class="fa-solid fa-download"></i>
+                    </div>
+                </a>
+
+                <!-- 4. R Studio -->
+                <a href="https://download1.rstudio.org/electron/windows/RStudio-2026.11.0-203.exe" target="_blank" rel="noopener noreferrer" class="flashcard">
+                    <div>
+                        <div class="flashcard-top">
+                            <div class="flashcard-icon"><i class="fa-solid fa-chart-line"></i></div>
+                            <span class="flashcard-badge">RStudio 2026.11.0-203</span>
+                        </div>
+                        <h3 class="flashcard-title">RStudio Desktop</h3>
+                        <span class="flashcard-domain">download1.rstudio.org/electron/windows/RStudio-2026.11.0-203.exe</span>
+                        <p class="flashcard-desc">
+                            Direct Windows installer for RStudio Desktop IDE, widely used for statistical geocomputation, spatial interpolation, climate trend modeling, and data visualization.
+                        </p>
+                        <div class="flashcard-specs">
+                            <div>
+                                <span class="spec-label">Package Type</span>
+                                <span class="spec-value">Windows .exe Installer</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Build</span>
+                                <span class="spec-value">2026.11.0-203</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flashcard-action">
+                        <span>Download RStudio</span>
+                        <i class="fa-solid fa-download"></i>
+                    </div>
+                </a>
+
+                <!-- 5. Python 3.15 / Python Manager -->
+                <a href="https://www.python.org/ftp/python/pymanager/python-manager-26.4.msix" target="_blank" rel="noopener noreferrer" class="flashcard">
+                    <div>
+                        <div class="flashcard-top">
+                            <div class="flashcard-icon"><i class="fa-brands fa-python"></i></div>
+                            <span class="flashcard-badge">Python 3.15 / Manager 26.4</span>
+                        </div>
+                        <h3 class="flashcard-title">Python 3.15 (Python Manager)</h3>
+                        <span class="flashcard-domain">python.org/ftp/python/pymanager/python-manager-26.4.msix</span>
+                        <p class="flashcard-desc">
+                            Official Python Manager MSIX package for installing and managing Python 3.15 runtimes on Windows for scientific data pipelines, NetCDF/HDF5 analysis, and automation.
+                        </p>
+                        <div class="flashcard-specs">
+                            <div>
+                                <span class="spec-label">Package Type</span>
+                                <span class="spec-value">Windows .msix Package</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Release</span>
+                                <span class="spec-value">Python 3.15 / Mgr 26.4</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flashcard-action">
+                        <span>Download Python Manager</span>
+                        <i class="fa-solid fa-download"></i>
+                    </div>
+                </a>
+
+                <!-- 6. Orfeo ToolBox -->
+                <a href="https://www.orfeo-toolbox.org/sdc_download/4295/?key=9clebhzaiksvgo3s03uxtg3ylvgxqo" target="_blank" rel="noopener noreferrer" class="flashcard">
+                    <div>
+                        <div class="flashcard-top">
+                            <div class="flashcard-icon"><i class="fa-solid fa-gears"></i></div>
+                            <span class="flashcard-badge">OTB Remote Sensing Suite</span>
+                        </div>
+                        <h3 class="flashcard-title">Orfeo ToolBox (OTB)</h3>
+                        <span class="flashcard-domain">orfeo-toolbox.org/sdc_download/4295/</span>
+                        <p class="flashcard-desc">
+                            Direct download for Orfeo ToolBox, an open-source library and processing suite for high-resolution optical, multispectral, and SAR remote sensing image analysis.
+                        </p>
+                        <div class="flashcard-specs">
+                            <div>
+                                <span class="spec-label">Domain</span>
+                                <span class="spec-value">Remote Sensing &amp; EO</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Integration</span>
+                                <span class="spec-value">CLI, Python &amp; QGIS</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flashcard-action">
+                        <span>Download Orfeo ToolBox</span>
+                        <i class="fa-solid fa-download"></i>
+                    </div>
+                </a>
+
+                <!-- 7. Geo Libre -->
+                <a href="https://downloads.geolibre.app/artifacts/geolibre-desktop_windows_x64.exe" target="_blank" rel="noopener noreferrer" class="flashcard">
+                    <div>
+                        <div class="flashcard-top">
+                            <div class="flashcard-icon"><i class="fa-solid fa-compass"></i></div>
+                            <span class="flashcard-badge">Windows x64 (.exe)</span>
+                        </div>
+                        <h3 class="flashcard-title">Geo Libre Desktop</h3>
+                        <span class="flashcard-domain">downloads.geolibre.app/artifacts/geolibre-desktop_windows_x64.exe</span>
+                        <p class="flashcard-desc">
+                            Direct 64-bit Windows installer for Geo Libre Desktop for modern geospatial exploration, map inspection, and spatial data workflows.
+                        </p>
+                        <div class="flashcard-specs">
+                            <div>
+                                <span class="spec-label">Architecture</span>
+                                <span class="spec-value">Windows x64 (.exe)</span>
+                            </div>
+                            <div>
+                                <span class="spec-label">Distribution</span>
+                                <span class="spec-value">Direct Artifact Binary</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flashcard-action">
+                        <span>Download Geo Libre (x64)</span>
+                        <i class="fa-solid fa-download"></i>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+
+        <!-- ================= TUTORIALS PAGE ================= -->
+        <section id="tutorials" class="page-section">
+            <div class="hero-container" style="padding-bottom: 10px;">
+                <span class="hero-badge">VIDEO WORKSHOPS &amp; PLAYLIST</span>
+                <h2 class="hero-title" style="font-size: 2.5rem;">Linked YouTube Tutorials</h2>
+                <p class="hero-subtitle">Search linked YouTube videos by topic or jump directly through the curated tutorial playlist below.</p>
+
+                <!-- Search Linked YouTube Videos -->
+                <div class="tutorial-search-wrap">
+                    <i class="fa-solid fa-magnifying-glass tutorial-search-icon"></i>
+                    <input
+                        type="text"
+                        id="tutorialSearchInput"
+                        class="tutorial-search-input"
+                        placeholder="Search linked YouTube tutorials (e.g., GIS, tutorial, video 1, video 2, video 3)..."
+                        oninput="filterTutorials()"
+                    >
+                </div>
+            </div>
+
+            <!-- Playlist Quick Bar -->
+            <div class="playlist-banner">
+                <div>
+                    <span class="spec-label" style="color: #38bdf8;">CURATED PLAYLIST • 3 LINKED VIDEOS</span>
+                    <strong style="font-size: 1.05rem;">GIS Gateway Tutorial Playlist</strong>
+                </div>
+                <div class="playlist-pills">
+                    <a href="https://youtu.be/4yY2ORTnq_Q?si=693GpXno4SUedNpN" target="_blank" rel="noopener noreferrer" class="playlist-pill-btn">
+                        <i class="fa-solid fa-play"></i> 1. Watch Tutorial 1
+                    </a>
+                    <a href="https://youtu.be/XwICeiJOkRY?si=aCI0I-e4Au28Ze3g" target="_blank" rel="noopener noreferrer" class="playlist-pill-btn">
+                        <i class="fa-solid fa-play"></i> 2. Watch Tutorial 2
+                    </a>
+                    <a href="https://youtu.be/s7Z3YOiH9UE?si=SylqxJbylh9hy195" target="_blank" rel="noopener noreferrer" class="playlist-pill-btn">
+                        <i class="fa-solid fa-play"></i> 3. Watch Tutorial 3
+                    </a>
+                </div>
+            </div>
+
+            <div class="flashcard-grid" id="tutorialsGrid">
+
+                <!-- VIDEO 1 -->
+                <div class="flashcard tutorial-card" data-search="playlist 1 video 1 tutorial gis spatial 4yY2ORTnq_Q">
+                    <div>
+                        <div class="flashcard-top">
+                            <div class="flashcard-icon"><i class="fa-brands fa-youtube"></i></div>
+                            <span class="flashcard-badge">Playlist Item #1</span>
+                        </div>
+                        <iframe
+                            class="video-embed-frame"
+                            src="https://www.youtube.com/embed/4yY2ORTnq_Q"
+                            title="GIS Gateway Tutorial Video 1"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                        </iframe>
+                        <h3 class="flashcard-title">Tutorial Session 01</h3>
+                        <span class="flashcard-domain">youtu.be/4yY2ORTnq_Q?si=693GpXno4SUedNpN</span>
+                        <p class="flashcard-desc">
+                            First linked tutorial video in the GIS Gateway playlist. Play directly above or open on YouTube in a new tab.
+                        </p>
+                    </div>
+                    <a href="https://youtu.be/4yY2ORTnq_Q?si=693GpXno4SUedNpN" target="_blank" rel="noopener noreferrer" class="flashcard-action">
+                        <span>Open on YouTube</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+
+                <!-- VIDEO 2 -->
+                <div class="flashcard tutorial-card" data-search="playlist 2 video 2 tutorial gis spatial XwICeiJOkRY">
+                    <div>
+                        <div class="flashcard-top">
+                            <div class="flashcard-icon"><i class="fa-brands fa-youtube"></i></div>
+                            <span class="flashcard-badge">Playlist Item #2</span>
+                        </div>
+                        <iframe
+                            class="video-embed-frame"
+                            src="https://www.youtube.com/embed/XwICeiJOkRY"
+                            title="GIS Gateway Tutorial Video 2"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                        </iframe>
+                        <h3 class="flashcard-title">Tutorial Session 02</h3>
+                        <span class="flashcard-domain">youtu.be/XwICeiJOkRY?si=aCI0I-e4Au28Ze3g</span>
+                        <p class="flashcard-desc">
+                            Second linked tutorial video in the GIS Gateway playlist covering practical spatial workflows and data tools.
+                        </p>
+                    </div>
+                    <a href="https://youtu.be/XwICeiJOkRY?si=aCI0I-e4Au28Ze3g" target="_blank" rel="noopener noreferrer" class="flashcard-action">
+                        <span>Open on YouTube</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+
+                <!-- VIDEO 3 -->
+                <div class="flashcard tutorial-card" data-search="playlist 3 video 3 tutorial gis spatial s7Z3YOiH9UE">
+                    <div>
+                        <div class="flashcard-top">
+                            <div class="flashcard-icon"><i class="fa-brands fa-youtube"></i></div>
+                            <span class="flashcard-badge">Playlist Item #3</span>
+                        </div>
+                        <iframe
+                            class="video-embed-frame"
+                            src="https://www.youtube.com/embed/s7Z3YOiH9UE"
+                            title="GIS Gateway Tutorial Video 3"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                        </iframe>
+                        <h3 class="flashcard-title">Tutorial Session 03</h3>
+                        <span class="flashcard-domain">youtu.be/s7Z3YOiH9UE?si=SylqxJbylh9hy195</span>
+                        <p class="flashcard-desc">
+                            Third linked tutorial video in the GIS Gateway playlist. Watch embedded or launch directly in YouTube.
+                        </p>
+                    </div>
+                    <a href="https://youtu.be/s7Z3YOiH9UE?si=SylqxJbylh9hy195" target="_blank" rel="noopener noreferrer" class="flashcard-action">
+                        <span>Open on YouTube</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= Q & A PAGE ================= -->
+        <section id="qa" class="page-section">
+            <div class="hero-container" style="padding-bottom: 10px;">
+                <span class="hero-badge">KNOWLEDGE BASE</span>
+                <h2 class="hero-title" style="font-size: 2.5rem;">Frequently Asked Questions (Q &amp; A)</h2>
+                <p class="hero-subtitle">Quick answers on dataset access, direct software downloads, and static hosting on GIS Gateway.</p>
+            </div>
+
+            <div class="flashcard-grid">
+
+                <div class="flashcard">
+                    <div>
+                        <div class="flashcard-top">
+                            <div class="flashcard-icon"><i class="fa-solid fa-circle-question"></i></div>
+                            <span class="flashcard-badge">Datasets</span>
+                        </div>
+                        <h3 class="flashcard-title">Q: Are all datasets in the directory open access?</h3>
+                        <span class="flashcard-domain">IMD, Copernicus, ISRO, NASA, USGS &amp; HydroSHEDS</span>
+                        <p class="flashcard-desc">
+                            <strong>A:</strong> Yes. Every flashcard links directly to official open-access archives or direct repositories. Some portals (like Copernicus CDS or NASA Earthdata) may require a free researcher account for bulk downloads, while others (such as CHIRPS HTTP and HydroSHEDS) offer direct downloads.
+                        </p>
+                    </div>
+                    <a href="#datasets" data-target="datasets" class="flashcard-action route-btn" style="text-decoration: none;">
+                        <span>Browse Datasets</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="flashcard">
+                    <div>
+                        <div class="flashcard-top">
+                            <div class="flashcard-icon"><i class="fa-solid fa-circle-question"></i></div>
+                            <span class="flashcard-badge">Software</span>
+                        </div>
+                        <h3 class="flashcard-title">Q: Do the Software flashcards point to official installers?</h3>
+                        <span class="flashcard-domain">Direct Official Binaries</span>
+                        <p class="flashcard-desc">
+                            <strong>A:</strong> Yes. Each software flashcard links directly to the official distribution URL for QGIS, GRASS GIS, ESA SNAP, RStudio, Python Manager (Python 3.15), Orfeo ToolBox, and Geo Libre.
+                        </p>
+                    </div>
+                    <a href="#software" data-target="software" class="flashcard-action route-btn" style="text-decoration: none;">
+                        <span>Go to Software</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="flashcard">
+                    <div>
+                        <div class="flashcard-top">
+                            <div class="flashcard-icon"><i class="fa-solid fa-circle-question"></i></div>
+                            <span class="flashcard-badge">Tutorials</span>
+                        </div>
+                        <h3 class="flashcard-title">Q: How can I find a specific linked YouTube video?</h3>
+                        <span class="flashcard-domain">Tutorials Search &amp; Playlist</span>
+                        <p class="flashcard-desc">
+                            <strong>A:</strong> Open the <strong>Tutorials</strong> tab and type keywords into the search bar to filter the linked videos instantly, or use the playlist buttons at the top to jump straight to any of the three videos.
+                        </p>
+                    </div>
+                    <a href="#tutorials" data-target="tutorials" class="flashcard-action route-btn" style="text-decoration: none;">
+                        <span>Open Tutorials</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
         <!-- ================= CONTACT PAGE ================= -->
         <section id="contact" class="page-section">
             <div class="glass-card widget-card" style="text-align: center; max-width: 600px; margin: 0 auto;">
                 <h2>Contact Us</h2>
-                <p class="description" style="border: none; background: transparent; padding: 0; margin-bottom: 20px;">Have a question or want to suggest an open-access geospatial portal? Drop us a message.</p>
+                <p class="description" style="border: none; background: transparent; padding: 0; margin-bottom: 20px;">Have a question or want to suggest an open-access geospatial portal? Drop us a line.</p>
                 <form id="contactForm" class="contact-form">
                     <div style="margin-bottom: 15px;">
                         <input type="text" id="contactName" required placeholder="Your Name" class="dark-input" style="width: 100%;">
@@ -697,7 +1191,7 @@
                 <p class="hero-subtitle" style="margin-bottom: 30px;">Keep the spatial data portal running and open-source.</p>
                 
                 <div class="donation-card">
-                    <div class="qr-badge">Scan & Pay via GPay / UPI</div>
+                    <div class="qr-badge">Scan &amp; Pay via GPay / UPI</div>
                     
                     <div class="qr-wrapper">
                         <img src="gpay-qr.png" alt="Google Pay QR Code" class="gpay-qr-img">
@@ -741,7 +1235,7 @@
         </div>
     </div>
 
-    <!-- Version 21.0 forces the browser to drop the cache -->
-    <script src="script.js?v=21.0"></script>
+    <!-- Version 22.0 forces the browser to drop the cache -->
+    <script src="script.js?v=22.0"></script>
 </body>
 </html>
