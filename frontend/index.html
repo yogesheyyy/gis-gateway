@@ -9,8 +9,8 @@
     <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Version 22.0 forces the browser to drop the cache -->
-    <link rel="stylesheet" href="style.css?v=22.0">
+    <!-- Version 23.0 forces the browser to drop the cache -->
+    <link rel="stylesheet" href="style.css?v=23.0">
     <meta name="google-adsense-account" content="ca-pub-8841814950405003">
 
     <style>
@@ -46,7 +46,7 @@
             box-shadow: 0 0 15px rgba(6, 182, 212, 0.35);
         }
 
-        /* Tutorial Search Bar */
+        /* Tutorial Search Bar & Playlist Banner */
         .tutorial-search-wrap {
             max-width: 620px;
             margin: 22px auto 10px auto;
@@ -268,20 +268,156 @@
             background: #020617;
         }
 
+        /* Interactive Community Q & A Forum */
+        .qa-wrapper {
+            max-width: 900px;
+            margin: 25px auto 60px auto;
+            padding: 0 20px;
+            text-align: left;
+        }
+
+        .qa-ask-card {
+            background: rgba(15, 23, 42, 0.82);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.28);
+            border-radius: 18px;
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+
+        .qa-input-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .qa-field {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            background: rgba(2, 6, 23, 0.65);
+            color: #f8fafc;
+            font-family: inherit;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .qa-field:focus {
+            border-color: #22d3ee;
+            box-shadow: 0 0 12px rgba(6, 182, 212, 0.2);
+        }
+
+        .qa-thread-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .qa-thread-card {
+            background: rgba(15, 23, 42, 0.78);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.22);
+            border-radius: 16px;
+            padding: 22px 24px;
+            position: relative;
+        }
+
+        .qa-thread-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+
+        .qa-author-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: #38bdf8;
+            font-size: 0.92rem;
+        }
+
+        .qa-timestamp {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .qa-question-text {
+            font-size: 0.96rem;
+            color: #f1f5f9;
+            line-height: 1.6;
+            margin: 0 0 14px 0;
+            white-space: pre-wrap;
+        }
+
+        .qa-reply-toggle-btn {
+            background: rgba(6, 182, 212, 0.12);
+            border: 1px solid rgba(6, 182, 212, 0.35);
+            color: #22d3ee;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .qa-reply-toggle-btn:hover {
+            background: linear-gradient(135deg, #0284c7, #06b6d4);
+            color: #fff;
+        }
+
+        .qa-replies-container {
+            margin-top: 16px;
+            padding-left: 18px;
+            border-left: 2px solid rgba(56, 189, 248, 0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .qa-reply-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 12px 15px;
+        }
+
+        .qa-reply-form {
+            margin-top: 14px;
+            padding: 14px;
+            border-radius: 12px;
+            background: rgba(2, 6, 23, 0.55);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+        }
+
         /* Light Mode Compatibility */
         body.light-mode .flashcard,
-        body.light-mode .playlist-banner {
-            background: rgba(255, 255, 255, 0.9);
+        body.light-mode .playlist-banner,
+        body.light-mode .qa-ask-card,
+        body.light-mode .qa-thread-card {
+            background: rgba(255, 255, 255, 0.92);
             border-color: rgba(15, 23, 42, 0.12);
         }
         body.light-mode .flashcard-title,
-        body.light-mode .spec-value {
+        body.light-mode .spec-value,
+        body.light-mode .qa-question-text {
             color: #0f172a;
         }
         body.light-mode .flashcard-desc {
             color: #334155;
         }
-        body.light-mode .flashcard-specs {
+        body.light-mode .flashcard-specs,
+        body.light-mode .qa-reply-item {
             background: rgba(15, 23, 42, 0.04);
             border-color: rgba(15, 23, 42, 0.08);
         }
@@ -293,9 +429,14 @@
         body.light-mode .filter-btn.active {
             color: #fff;
         }
-        body.light-mode .tutorial-search-input {
-            background: rgba(255, 255, 255, 0.92);
+        body.light-mode .tutorial-search-input,
+        body.light-mode .qa-field {
+            background: #f8fafc;
             color: #0f172a;
+            border-color: rgba(15, 23, 42, 0.18);
+        }
+        body.light-mode .qa-reply-form {
+            background: #f1f5f9;
         }
     </style>
 </head>
@@ -364,7 +505,7 @@
                 <div class="glass-card">
                     <div class="card-icon"><i class="fa-brands fa-youtube"></i></div>
                     <h3>Video Tutorials &amp; Q&amp;A</h3>
-                    <p>Search linked YouTube walkthroughs, browse the curated playlist, and review common geoinformatics answers.</p>
+                    <p>Search linked YouTube walkthroughs, browse the curated playlist, and discuss geoinformatics questions with the community.</p>
                 </div>
             </div>
         </section>
@@ -989,7 +1130,7 @@
                         type="text"
                         id="tutorialSearchInput"
                         class="tutorial-search-input"
-                        placeholder="Search linked YouTube tutorials (e.g., GIS, tutorial, video 1, video 2, video 3)..."
+                        placeholder="Search linked YouTube tutorials (e.g., playlist, video 1, video 2, video 3)..."
                         oninput="filterTutorials()"
                     >
                 </div>
@@ -1097,70 +1238,34 @@
             </div>
         </section>
 
-        <!-- ================= Q & A PAGE ================= -->
+        <!-- ================= INTERACTIVE COMMUNITY Q & A PAGE ================= -->
         <section id="qa" class="page-section">
             <div class="hero-container" style="padding-bottom: 10px;">
-                <span class="hero-badge">KNOWLEDGE BASE</span>
-                <h2 class="hero-title" style="font-size: 2.5rem;">Frequently Asked Questions (Q &amp; A)</h2>
-                <p class="hero-subtitle">Quick answers on dataset access, direct software downloads, and static hosting on GIS Gateway.</p>
+                <span class="hero-badge">COMMUNITY FORUM</span>
+                <h2 class="hero-title" style="font-size: 2.5rem;">Community Q &amp; A</h2>
+                <p class="hero-subtitle">Ask a geospatial or meteorological question below, or click Reply on any thread to help fellow researchers.</p>
             </div>
 
-            <div class="flashcard-grid">
-
-                <div class="flashcard">
-                    <div>
-                        <div class="flashcard-top">
-                            <div class="flashcard-icon"><i class="fa-solid fa-circle-question"></i></div>
-                            <span class="flashcard-badge">Datasets</span>
+            <div class="qa-wrapper">
+                <!-- Ask a Question Form -->
+                <div class="qa-ask-card">
+                    <h3 style="margin: 0 0 14px 0; font-size: 1.15rem;"><i class="fa-solid fa-pen-to-square" style="color: #06b6d4; margin-right: 8px;"></i>Ask a New Question</h3>
+                    <form id="qaNewQuestionForm" onsubmit="submitNewQuestion(event)">
+                        <div class="qa-input-row">
+                            <input type="text" id="qaUserName" class="qa-field" placeholder="Your Username" required maxlength="40">
+                            <textarea id="qaQuestionMessage" class="qa-field" rows="3" placeholder="Type your question or comment..." required maxlength="1000"></textarea>
                         </div>
-                        <h3 class="flashcard-title">Q: Are all datasets in the directory open access?</h3>
-                        <span class="flashcard-domain">IMD, Copernicus, ISRO, NASA, USGS &amp; HydroSHEDS</span>
-                        <p class="flashcard-desc">
-                            <strong>A:</strong> Yes. Every flashcard links directly to official open-access archives or direct repositories. Some portals (like Copernicus CDS or NASA Earthdata) may require a free researcher account for bulk downloads, while others (such as CHIRPS HTTP and HydroSHEDS) offer direct downloads.
-                        </p>
-                    </div>
-                    <a href="#datasets" data-target="datasets" class="flashcard-action route-btn" style="text-decoration: none;">
-                        <span>Browse Datasets</span>
-                        <i class="fa-solid fa-arrow-right"></i>
-                    </a>
+                        <button type="submit" class="glow-btn" style="width: 100%;">
+                            <span>Post Question</span>
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </form>
                 </div>
 
-                <div class="flashcard">
-                    <div>
-                        <div class="flashcard-top">
-                            <div class="flashcard-icon"><i class="fa-solid fa-circle-question"></i></div>
-                            <span class="flashcard-badge">Software</span>
-                        </div>
-                        <h3 class="flashcard-title">Q: Do the Software flashcards point to official installers?</h3>
-                        <span class="flashcard-domain">Direct Official Binaries</span>
-                        <p class="flashcard-desc">
-                            <strong>A:</strong> Yes. Each software flashcard links directly to the official distribution URL for QGIS, GRASS GIS, ESA SNAP, RStudio, Python Manager (Python 3.15), Orfeo ToolBox, and Geo Libre.
-                        </p>
-                    </div>
-                    <a href="#software" data-target="software" class="flashcard-action route-btn" style="text-decoration: none;">
-                        <span>Go to Software</span>
-                        <i class="fa-solid fa-arrow-right"></i>
-                    </a>
+                <!-- Live Questions & Replies Feed -->
+                <div id="qaThreadList" class="qa-thread-list">
+                    <p style="text-align: center; color: #94a3b8;">Loading community discussions...</p>
                 </div>
-
-                <div class="flashcard">
-                    <div>
-                        <div class="flashcard-top">
-                            <div class="flashcard-icon"><i class="fa-solid fa-circle-question"></i></div>
-                            <span class="flashcard-badge">Tutorials</span>
-                        </div>
-                        <h3 class="flashcard-title">Q: How can I find a specific linked YouTube video?</h3>
-                        <span class="flashcard-domain">Tutorials Search &amp; Playlist</span>
-                        <p class="flashcard-desc">
-                            <strong>A:</strong> Open the <strong>Tutorials</strong> tab and type keywords into the search bar to filter the linked videos instantly, or use the playlist buttons at the top to jump straight to any of the three videos.
-                        </p>
-                    </div>
-                    <a href="#tutorials" data-target="tutorials" class="flashcard-action route-btn" style="text-decoration: none;">
-                        <span>Open Tutorials</span>
-                        <i class="fa-solid fa-arrow-right"></i>
-                    </a>
-                </div>
-
             </div>
         </section>
 
@@ -1235,7 +1340,7 @@
         </div>
     </div>
 
-    <!-- Version 22.0 forces the browser to drop the cache -->
-    <script src="script.js?v=22.0"></script>
+    <!-- Version 23.0 forces the browser to drop the cache -->
+    <script src="script.js?v=23.0"></script>
 </body>
 </html>

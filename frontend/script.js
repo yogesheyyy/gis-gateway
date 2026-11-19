@@ -26,7 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Respect URL hash on page load or refresh (e.g., localhost:8000/#datasets)
     const initialHash = window.location.hash.replace('#', '');
     if (initialHash && document.getElementById(initialHash)) {
         activateSection(initialHash);
@@ -177,6 +176,9 @@ document.addEventListener("DOMContentLoaded", () => {
             contactForm.reset();
         });
     }
+
+    // Initialize Q & A Board
+    renderQaThreads();
 });
 
 // ================= 5. FLASHCARD CATEGORY FILTER =================
@@ -194,7 +196,205 @@ function filterFlashcards(category, activeBtn) {
     });
 }
 
-// ================= 6. GLOBAL DONATE HELPERS =================
+// ================= 6. TUTORIAL VIDEO SEARCH =================
+function filterTutorials() {
+    const inputEl = document.getElementById('tutorialSearchInput');
+    const query = (inputEl ? inputEl.value : '').trim().toLowerCase();
+    const cards = document.querySelectorAll('.tutorial-card');
+
+    cards.forEach(card => {
+        const textContent = (card.textContent || '').toLowerCase();
+        const searchMeta = (card.getAttribute('data-search') || '').toLowerCase();
+        if (!query || textContent.includes(query) || searchMeta.includes(query)) {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+// ================= 7. INTERACTIVE COMMUNITY Q & A =================
+const QA_FIREBASE_URL = "https://gis-gateway-qa-default-rtdb.asia-southeast1.firebasedatabase.app/"; // Replace with your Firebase Realtime Database URL so all visitors share posts
+const QA_LOCAL_KEY = "gis_gateway_qa_threads_v1";
+
+function escapeHtml(str) {
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function getDefaultThreads() {
+    return {
+        "welcome_thread": {
+            username: "GIS_Gateway_Admin",
+            message: "Welcome to the GIS Gateway Q & A board! Post a question or comment above, or click Reply below to answer anyone's question.",
+            timestamp: "Pinned • Community Forum",
+            createdAt: 1,
+            replies: {
+                "welcome_reply_1": {
+                    username: "Spatial_User",
+                    message: "Great setup—anyone can post a question or reply here with just a username and message.",
+                    timestamp: "Community Member",
+                    createdAt: 2
+                }
+            }
+        }
+    };
+}
+
+async function fetchQaThreads() {
+    const isConfigured = QA_FIREBASE_URL && !QA_FIREBASE_URL.includes("YOUR_FIREBASE_DB_URL");
+    if (isConfigured) {
+        try {
+            const res = await fetch(`${QA_FIREBASE_URL}/qa_threads.json`);
+            if (res.ok) {
+                const data = await res.json();
+                return data || getDefaultThreads();
+            }
+        } catch (err) {
+            console.warn("Falling back to local storage for Q&A:", err);
+        }
+    }
+    const saved = localStorage.getItem(QA_LOCAL_KEY);
+    return saved ? JSON.parse(saved) : getDefaultThreads();
+}
+
+async function renderQaThreads() {
+    const container = document.getElementById("qaThreadList");
+    if (!container) return;
+
+    const threadsObj = await fetchQaThreads();
+    const threadEntries = Object.entries(threadsObj).sort((a, b) => (b[1].createdAt || 0) - (a[1].createdAt || 0));
+
+    if (threadEntries.length === 0) {
+        container.innerHTML = `<p style="text-align: center; color: #94a3b8;">No questions yet. Be the first to ask above!</p>`;
+        return;
+    }
+
+    container.innerHTML = threadEntries.map(([id, item]) => {
+        const repliesObj = item.replies || {};
+        const replyEntries = Object.entries(repliesObj).sort((a, b) => (a[1].createdAt || 0) - (b[1].createdAt || 0));
+
+        const repliesHtml = replyEntries.length > 0 ? `
+            <div class="qa-replies-container">
+                ${replyEntries.map(([, rep]) => `
+                    <div class="qa-reply-item">
+                        <div class="qa-thread-header" style="margin-bottom: 6px;">
+                            <span class="qa-author-badge" style="font-size: 0.85rem;">
+                                <i class="fa-solid fa-reply" style="color: #22d3ee;"></i> ${escapeHtml(rep.username)}
+                            </span>
+                            <span class="qa-timestamp">${escapeHtml(rep.timestamp || "")}</span>
+                        </div>
+                        <p class="qa-question-text" style="margin: 0; font-size: 0.9rem;">${escapeHtml(rep.message)}</p>
+                    </div>
+                `).join("")}
+            </div>
+        ` : "";
+
+        return `
+            <div class="qa-thread-card">
+                <div class="qa-thread-header">
+                    <span class="qa-author-badge">
+                        <i class="fa-solid fa-user-astronaut"></i> ${escapeHtml(item.username)}
+                    </span>
+                    <span class="qa-timestamp">${escapeHtml(item.timestamp || "")}</span>
+                </div>
+                <p class="qa-question-text">${escapeHtml(item.message)}</p>
+
+                <button type="button" class="qa-reply-toggle-btn" onclick="toggleReplyForm('${id}')">
+                    <i class="fa-solid fa-reply"></i> Reply (${replyEntries.length})
+                </button>
+
+                <form id="reply-form-${id}" class="qa-reply-form" onsubmit="submitReply(event, '${id}')">
+                    <input type="text" id="reply-user-${id}" class="qa-field" placeholder="Your Username" required maxlength="40">
+                    <textarea id="reply-msg-${id}" class="qa-field" rows="2" placeholder="Write your answer or comment..." required maxlength="800"></textarea>
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <button type="button" class="filter-btn" onclick="toggleReplyForm('${id}')">Cancel</button>
+                        <button type="submit" class="qa-reply-toggle-btn" style="background: linear-gradient(135deg, #0284c7, #06b6d4); color: #fff;">Post Reply</button>
+                    </div>
+                </form>
+
+                ${repliesHtml}
+            </div>
+        `;
+    }).join("");
+}
+
+function toggleReplyForm(threadId) {
+    const form = document.getElementById(`reply-form-${threadId}`);
+    if (!form) return;
+    form.style.display = form.style.display === "flex" ? "none" : "flex";
+}
+
+async function submitNewQuestion(event) {
+    event.preventDefault();
+    const userInput = document.getElementById("qaUserName");
+    const msgInput = document.getElementById("qaQuestionMessage");
+    const username = userInput.value.trim();
+    const message = msgInput.value.trim();
+    if (!username || !message) return;
+
+    const newPost = {
+        username,
+        message,
+        timestamp: new Date().toLocaleString([], { dateStyle: "medium", timeStyle: "short" }),
+        createdAt: Date.now()
+    };
+
+    const isConfigured = QA_FIREBASE_URL && !QA_FIREBASE_URL.includes("YOUR_FIREBASE_DB_URL");
+    if (isConfigured) {
+        await fetch(`${QA_FIREBASE_URL}/qa_threads.json`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newPost)
+        });
+    } else {
+        const threads = await fetchQaThreads();
+        threads[`q_${Date.now()}`] = newPost;
+        localStorage.setItem(QA_LOCAL_KEY, JSON.stringify(threads));
+    }
+
+    userInput.value = "";
+    msgInput.value = "";
+    await renderQaThreads();
+}
+
+async function submitReply(event, threadId) {
+    event.preventDefault();
+    const userInput = document.getElementById(`reply-user-${threadId}`);
+    const msgInput = document.getElementById(`reply-msg-${threadId}`);
+    const username = userInput.value.trim();
+    const message = msgInput.value.trim();
+    if (!username || !message) return;
+
+    const newReply = {
+        username,
+        message,
+        timestamp: new Date().toLocaleString([], { dateStyle: "medium", timeStyle: "short" }),
+        createdAt: Date.now()
+    };
+
+    const isConfigured = QA_FIREBASE_URL && !QA_FIREBASE_URL.includes("YOUR_FIREBASE_DB_URL");
+    if (isConfigured) {
+        await fetch(`${QA_FIREBASE_URL}/qa_threads/${threadId}/replies.json`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newReply)
+        });
+    } else {
+        const threads = await fetchQaThreads();
+        if (!threads[threadId].replies) threads[threadId].replies = {};
+        threads[threadId].replies[`r_${Date.now()}`] = newReply;
+        localStorage.setItem(QA_LOCAL_KEY, JSON.stringify(threads));
+    }
+
+    await renderQaThreads();
+}
+
+// ================= 8. GLOBAL DONATE HELPERS =================
 function copyUpiId() {
     const upiElement = document.getElementById('upiText');
     if (!upiElement) return;
@@ -231,20 +431,4 @@ function triggerSuccessAnimation() {
     if (checkmarkAnim) checkmarkAnim.style.display = 'inline-block';
     if (btn) btn.classList.add('success-state');
     if (successNote) successNote.style.display = 'block';
-}
-
-function filterTutorials() {
-    const inputEl = document.getElementById('tutorialSearchInput');
-    const query = (inputEl ? inputEl.value : '').trim().toLowerCase();
-    const cards = document.querySelectorAll('.tutorial-card');
-
-    cards.forEach(card => {
-        const textContent = (card.textContent || '').toLowerCase();
-        const searchMeta = (card.getAttribute('data-search') || '').toLowerCase();
-        if (!query || textContent.includes(query) || searchMeta.includes(query)) {
-            card.style.display = 'flex';
-        } else {
-            card.style.display = 'none';
-        }
-    });
 }
