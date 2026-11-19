@@ -9,8 +9,8 @@
     <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Version 23.0 forces the browser to drop the cache -->
-    <link rel="stylesheet" href="style.css?v=23.0">
+    <!-- Version 24.0 forces the browser to drop the cache -->
+    <link rel="stylesheet" href="style.css?v=24.0">
     <meta name="google-adsense-account" content="ca-pub-8841814950405003">
 
     <style>
@@ -400,6 +400,135 @@
             gap: 10px;
         }
 
+        /* ================= MOBILE RESPONSIVE STYLES ================= */
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #f8fafc;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            cursor: pointer;
+        }
+
+        body.light-mode .mobile-menu-btn {
+            color: #0f172a;
+            background: rgba(15, 23, 42, 0.06);
+            border-color: rgba(15, 23, 42, 0.18);
+        }
+
+        @media (max-width: 820px) {
+            .mobile-menu-btn {
+                display: inline-flex;
+            }
+
+            .main-nav {
+                display: none;
+                position: absolute;
+                top: calc(100% + 10px);
+                left: 16px;
+                right: 16px;
+                flex-direction: column;
+                gap: 6px;
+                padding: 14px;
+                border-radius: 16px;
+                background: rgba(15, 23, 42, 0.96);
+                backdrop-filter: blur(18px);
+                border: 1px solid rgba(56, 189, 248, 0.28);
+                box-shadow: 0 18px 36px rgba(0, 0, 0, 0.55);
+                z-index: 999;
+            }
+
+            body.light-mode .main-nav {
+                background: rgba(255, 255, 255, 0.97);
+                border-color: rgba(15, 23, 42, 0.14);
+            }
+
+            .main-nav.mobile-open {
+                display: flex;
+            }
+
+            .main-nav .nav-link {
+                padding: 12px 14px;
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                border-radius: 10px;
+            }
+
+            .hero-title {
+                font-size: clamp(1.85rem, 7vw, 2.5rem) !important;
+                line-height: 1.18;
+            }
+
+            .hero-subtitle {
+                font-size: 0.95rem;
+                padding: 0 6px;
+            }
+
+            .flashcard-grid {
+                grid-template-columns: 1fr !important;
+                gap: 18px;
+                margin: 20px auto 44px auto;
+                padding: 0 14px;
+            }
+
+            .flashcard {
+                padding: 20px;
+            }
+
+            .flashcard-specs {
+                grid-template-columns: 1fr;
+            }
+
+            .playlist-banner {
+                margin: 18px 14px 0 14px;
+                padding: 16px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .playlist-pills {
+                width: 100%;
+            }
+
+            .playlist-pill-btn {
+                min-height: 44px;
+                display: inline-flex;
+                align-items: center;
+            }
+
+            .qa-wrapper {
+                padding: 0 14px;
+                margin-bottom: 44px;
+            }
+
+            .qa-ask-card,
+            .qa-thread-card {
+                padding: 18px;
+            }
+
+            .qa-replies-container {
+                padding-left: 12px;
+            }
+
+            .filter-btn,
+            .qa-reply-toggle-btn,
+            #theme-toggle,
+            .donate-btn {
+                min-height: 44px;
+            }
+        }
+
         /* Light Mode Compatibility */
         body.light-mode .flashcard,
         body.light-mode .playlist-banner,
@@ -461,7 +590,7 @@
                 <a href="#qa" class="nav-link" data-target="qa">Q &amp; A</a>
                 <a href="#contact" class="nav-link" data-target="contact">Contact</a>
             </nav>
-            <div class="nav-actions" style="display: flex; align-items: center; gap: 15px;">
+            <div class="nav-actions" style="display: flex; align-items: center; gap: 12px;">
                 
                 <!-- Theme Toggle Button -->
                 <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
@@ -471,6 +600,10 @@
                     <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                     </svg>
+                </button>
+
+                <button type="button" id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">
+                    <i class="fa-solid fa-bars"></i>
                 </button>
 
                 <a href="#donate" data-target="donate" class="donate-btn route-btn">Donate <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></a>
@@ -1270,7 +1403,6 @@
         </section>
 
         <!-- ================= CONTACT PAGE ================= -->
-        <!-- ================= CONTACT PAGE ================= -->
         <section id="contact" class="page-section">
             <div class="glass-card widget-card" style="text-align: center; max-width: 600px; margin: 0 auto;">
                 <h2>Contact Us</h2>
@@ -1348,7 +1480,7 @@
         </div>
     </div>
 
-    <!-- Version 23.0 forces the browser to drop the cache -->
-    <script src="script.js?v=23.0"></script>
+    <!-- Version 24.0 forces the browser to drop the cache -->
+    <script src="script.js?v=24.0"></script>
 </body>
 </html>

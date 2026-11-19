@@ -3,6 +3,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // ================= 1. TAB / SECTION ROUTING =================
     const navLinks = document.querySelectorAll('.nav-link, .route-btn');
     const pages = document.querySelectorAll('.page-section');
+    const mainNav = document.querySelector('.main-nav');
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+
+    function closeMobileMenu() {
+        if (mainNav && mainNav.classList.contains('mobile-open')) {
+            mainNav.classList.remove('mobile-open');
+            if (mobileBtn) mobileBtn.setAttribute('aria-expanded', 'false');
+        }
+    }
 
     function activateSection(targetId) {
         const targetPage = document.getElementById(targetId);
@@ -14,6 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
         targetPage.classList.add('active');
         const activeNav = document.querySelector(`.nav-link[data-target="${targetId}"]`);
         if (activeNav) activeNav.classList.add('active');
+        closeMobileMenu();
     }
 
     navLinks.forEach(link => {
@@ -25,6 +35,20 @@ document.addEventListener("DOMContentLoaded", () => {
             activateSection(targetId);
         });
     });
+
+    if (mobileBtn && mainNav) {
+        mobileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = mainNav.classList.toggle('mobile-open');
+            mobileBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!mainNav.contains(e.target) && !mobileBtn.contains(e.target)) {
+                closeMobileMenu();
+            }
+        });
+    }
 
     const initialHash = window.location.hash.replace('#', '');
     if (initialHash && document.getElementById(initialHash)) {
